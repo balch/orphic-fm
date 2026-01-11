@@ -1,0 +1,11 @@
+title: Orphic FM
+url: "https://orphic.fm"
+description: Showcase of generative pieces.
+show_downloads: false
+plugins:
+  - jekyll-redirect-from
+navigation:
+  - title: Home
+    url: /
+social:
+  github: balch
