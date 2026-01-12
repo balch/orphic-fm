@@ -1,9 +1,15 @@
 title: Orphic FM
 url: "https://orphic.fm"
-description: Showcase of generative pieces.
+description: Music is semi-random math (with structure)
 show_downloads: false
 plugins:
   - jekyll-redirect-from
+
+collections:
+  creations:
+    output: true
+    permalink: /creation/:path/
+
 navigation:
   - title: Home
     url: /
