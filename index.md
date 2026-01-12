@@ -17,7 +17,7 @@ title: Home
   <div class="container narrow">
     <div class="creation-container">
       <div class="video-card">
-        <div class="video-wrapper">
+        <div class="video-container">
           <video 
             src="{{ latest_creation.video_url | relative_url }}" 
             class="video-lightbox-trigger"
@@ -126,18 +126,22 @@ title: Home
     background: #050505;
     box-shadow: 0 60px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
   }
   
   .video-card:hover {
     transform: scale(1.01);
   }
   
-  .video-wrapper {
+  .video-container {
     position: relative;
+    border-radius: 40px;
+    overflow: hidden;
     aspect-ratio: 16/9;
+    background: #000;
   }
   
-  .video-wrapper video {
+  .video-container video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -211,11 +215,17 @@ title: Home
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255,255,255,0.05);
   }
-
+  
   @media (max-width: 768px) {
-    .hero-section { padding: 8rem 0 4rem; }
-    .creation-container { gap: 2.5rem; }
-    .creation-body-text { font-size: 1.1rem; }
+    .video-container { border-radius: 20px; }
     .video-card { border-radius: 20px; }
+    :root {
+      --hero-font-size: clamp(2.8rem, 12vw, 5rem);
+    }
+    .hero-section { padding: 8rem 0 4rem; }
+    .hero-subtitle { margin-top: 1.5rem; }
+    .creation-container { gap: 2.5rem; }
+    .creation-display-title { font-size: clamp(2rem, 8vw, 3rem); }
+    .creation-body-text { font-size: 1.1rem; margin-bottom: 2rem; }
   }
 </style>
