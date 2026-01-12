@@ -1,0 +1,134 @@
+---
+layout: default
+---
+
+<article class="creation-detail">
+  <div class="container narrow">
+    <header class="creation-header">
+      <h1 class="creation-title">{{ page.title }}</h1>
+      <div class="creation-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
+        {% if page.length %}
+          <span class="separator">&bull;</span>
+          <span class="length">{{ page.length }}</span>
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="creation-video-container">
+      <div class="video-card">
+        <div class="video-wrapper">
+          <video 
+            src="{{ page.video_url | relative_url }}" 
+            class="video-lightbox-trigger"
+            poster="{{ page.poster_url | relative_url }}"
+            playsinline 
+            loop 
+            muted 
+            autoplay></video>
+          <div class="sound-toggle" aria-label="Toggle Sound">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="creation-content">
+      <div class="creation-description">
+        {{ content }}
+        {% if page.description %}
+          <p>{{ page.description }}</p>
+        {% endif %}
+      </div>
+
+      {% if page.tags %}
+        <div class="creation-tags">
+          {% for tag in page.tags %}
+            <span class="tag">#{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <footer class="creation-footer">
+      <a href="{{ '/' | relative_url }}" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Gallery
+      </a>
+    </footer>
+  </div>
+</article>
+
+<style>
+  .creation-detail {
+    padding: 6rem 0;
+  }
+  .narrow {
+    max-width: 800px;
+  }
+  .creation-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .creation-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .creation-meta {
+    font-size: 0.9rem;
+    opacity: 0.5;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .separator {
+    margin: 0 0.5rem;
+  }
+  .creation-video-container {
+    margin-bottom: 3rem;
+  }
+  .creation-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-top: 2rem;
+  }
+  .creation-tags {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.25rem 0.75rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .creation-footer {
+    margin-top: 6rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    color: inherit;
+  }
+  .back-link:hover {
+    opacity: 1;
+  }
+</style>

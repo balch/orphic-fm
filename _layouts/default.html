@@ -9,7 +9,13 @@
   <meta name="author" content="Orpheus">
   
   {% assign default_image = "/assets/images/profile-pic.jpg" | absolute_url %}
-  {% if page.image %}
+  {% if page.og_image %}
+    {% if page.og_image contains "://" %}
+      {% assign og_image = page.og_image %}
+    {% else %}
+      {% assign og_image = page.og_image | absolute_url %}
+    {% endif %}
+  {% elsif page.image %}
     {% if page.image contains "://" %}
       {% assign og_image = page.image %}
     {% else %}
@@ -20,7 +26,7 @@
   {% endif %}
 
   <!-- Open Graph / Facebook / LinkedIn -->
-  <meta property="og:type" content="{% if page.layout == 'post' %}article{% else %}website{% endif %}">
+  <meta property="og:type" content="{% if page.layout == 'post' or page.layout == 'creation' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:site_name" content="{{ site.title }}">
   <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
@@ -39,6 +45,13 @@
   <meta property="twitter:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
   <meta property="twitter:description" content="{{ page.description | default: page.excerpt | default: site.description | strip_html | strip_newlines | escape | truncate: 160 }}">
   <meta property="twitter:image" content="{{ og_image }}">
+
+  {% if page.layout == 'creation' %}
+    <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
+    {% for tag in page.tags %}
+      <meta property="article:tag" content="{{ tag }}">
+    {% endfor %}
+  {% endif %}
 
   <!-- Theme color for mobile browsers and PWA splash screen -->
   <meta name="theme-color" content="#0d0d0d">
@@ -195,9 +208,9 @@
         });
       }
 
-      // Image and Video Lightbox for blog posts
-      const postContent = document.querySelector('.post-content');
-      if (postContent) {
+      // Image and Video Lightbox for blog posts and home page
+      const contentContainer = document.querySelector('.post-content') || document.querySelector('.home');
+      if (contentContainer) {
         // Create lightbox elements with video support
         const lightbox = document.createElement('div');
         lightbox.className = 'image-lightbox';
@@ -238,7 +251,17 @@
           lightboxImg.style.display = 'none';
           lightbox.classList.add('active');
           document.body.style.overflow = 'hidden';
-          lightboxVideo.play();
+          
+          // Try to play with error handling for browser blocks
+          const playPromise = lightboxVideo.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              console.log("Auto-play was prevented. Muting and showing controls.");
+              lightboxVideo.muted = true;
+              lightboxVideo.controls = true;
+              lightboxVideo.play();
+            });
+          }
 
           if (!lightboxHistoryPushed) {
             history.pushState({ lightbox: true }, '');
@@ -271,7 +294,7 @@
         });
 
         // Add click handlers to all images in post content (including table images)
-        postContent.querySelectorAll('img').forEach(img => {
+        contentContainer.querySelectorAll('img').forEach(img => {
           img.style.cursor = 'zoom-in';
           img.addEventListener('click', () => {
             openImageLightbox(img.src, img.alt);
@@ -279,10 +302,21 @@
         });
 
         // Add click handlers to videos with .video-lightbox-trigger class
-        postContent.querySelectorAll('video.video-lightbox-trigger').forEach(video => {
-          video.addEventListener('click', () => {
+        contentContainer.querySelectorAll('video.video-lightbox-trigger').forEach(video => {
+          video.style.cursor = 'pointer';
+          video.addEventListener('click', (e) => {
+            e.preventDefault();
             openVideoLightbox(video.src || video.querySelector('source')?.src);
           });
+          
+          // Hide/show play overlay based on video state if it exists
+          const container = video.closest('.video-container');
+          const overlay = container ? container.querySelector('.play-overlay') : null;
+          
+          if (overlay) {
+            video.addEventListener('play', () => overlay.style.display = 'none');
+            video.addEventListener('pause', () => overlay.style.display = 'block');
+          }
         });
 
         lightbox.addEventListener('click', (e) => {
@@ -302,7 +336,7 @@
         });
 
         // Sound toggle for inline videos
-        postContent.querySelectorAll('.video-container').forEach(container => {
+        contentContainer.querySelectorAll('.video-container').forEach(container => {
           const video = container.querySelector('video');
           const soundBtn = container.querySelector('.sound-toggle');
           
