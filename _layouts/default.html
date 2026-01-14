@@ -303,14 +303,26 @@
 
         // Add click handlers to videos with .video-lightbox-trigger class
         contentContainer.querySelectorAll('video.video-lightbox-trigger').forEach(video => {
-          video.style.cursor = 'pointer';
-          video.addEventListener('click', (e) => {
-            e.preventDefault();
-            openVideoLightbox(video.src || video.querySelector('source')?.src);
-          });
+          const container = video.closest('.video-container') || video.closest('.grid-video-container');
+          const expandOverlay = container ? container.querySelector('.expand-overlay') : null;
+          
+          // If there's an expand overlay, only trigger lightbox from the overlay
+          if (expandOverlay) {
+            expandOverlay.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              openVideoLightbox(video.src || video.querySelector('source')?.src);
+            });
+          } else {
+            // No expand overlay, video itself triggers lightbox
+            video.style.cursor = 'pointer';
+            video.addEventListener('click', (e) => {
+              e.preventDefault();
+              openVideoLightbox(video.src || video.querySelector('source')?.src);
+            });
+          }
           
           // Hide/show play overlay based on video state if it exists
-          const container = video.closest('.video-container');
           const overlay = container ? container.querySelector('.play-overlay') : null;
           
           if (overlay) {

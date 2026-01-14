@@ -75,17 +75,25 @@ title: Home
     <div class="creation-grid">
       {% for creation in creations %}
         {% unless creation.url == latest_creation.url %}
-          <a href="{{ creation.url | relative_url }}" class="grid-item">
+          <div class="grid-item">
             <div class="grid-video-container">
               <video 
                 src="{{ creation.video_url | relative_url }}" 
                 poster="{{ creation.poster_url | relative_url }}"
-                muted 
+                class="video-lightbox-trigger"
+                controls
                 loop 
                 playsinline></video>
+              <div class="expand-overlay" title="Click to expand">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+                </svg>
+              </div>
             </div>
             <div class="grid-info">
-              <h3 class="grid-title">{{ creation.title }}</h3>
+              <a href="{{ creation.url | relative_url }}" class="grid-title-link">
+                <h3 class="grid-title">{{ creation.title }}</h3>
+              </a>
               <div class="grid-meta">
                 <span>{{ creation.date | date: "%B %d, %Y" }}</span>
                 {% if creation.album %}
@@ -98,7 +106,7 @@ title: Home
                 {% endif %}
               </div>
             </div>
-          </a>
+          </div>
         {% endunless %}
       {% endfor %}
     </div>
@@ -278,29 +286,28 @@ title: Home
 
   .creation-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
   }
 
   .grid-item {
-    text-decoration: none;
-    color: inherit;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .grid-item:hover {
-    transform: translateY(-8px);
+    gap: 1rem;
   }
 
   .grid-video-container {
     aspect-ratio: 16/9;
-    border-radius: 24px;
+    border-radius: 16px;
     overflow: hidden;
     background: #000;
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .grid-video-container:hover {
+    transform: scale(1.02);
   }
 
   .grid-video-container video {
@@ -308,23 +315,70 @@ title: Home
     height: 100%;
     object-fit: cover;
     display: block;
-    opacity: 0.8;
-    transition: opacity 0.4s;
   }
 
-  .grid-item:hover .grid-video-container video {
+  .expand-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 10;
+  }
+
+  .expand-overlay svg {
+    width: 24px;
+    height: 24px;
+  }
+
+
+  .grid-video-container:hover .expand-overlay {
     opacity: 1;
   }
 
+  .expand-overlay:hover {
+    background: rgba(139, 92, 246, 0.9);
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: scale(1.1);
+  }
+
+  .expand-overlay svg {
+    color: white;
+  }
+
+  .grid-title-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s;
+  }
+
+  .grid-title-link:hover {
+    color: var(--accent-primary);
+  }
+
+  .grid-title-link:hover .grid-title {
+    color: var(--accent-primary);
+  }
+
   .grid-title {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
     letter-spacing: -0.01em;
   }
 
   .grid-meta {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     opacity: 0.4;
     display: flex;
     align-items: center;
