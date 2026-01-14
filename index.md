@@ -10,13 +10,14 @@ title: Home
   </div>
 </section>
 
-{% assign latest_creation = site.creations | sort: 'date' | last %}
+{% assign creations = site.creations | sort: 'date' | reverse %}
+{% assign latest_creation = creations | first %}
 
 {% if latest_creation %}
 <section id="featured-creation" class="featured-creation-section">
   <div class="container narrow">
     <div class="creation-container">
-      <div class="video-card">
+      <div class="video-card large">
         <div class="video-container">
           <video 
             src="{{ latest_creation.video_url | relative_url }}" 
@@ -40,6 +41,10 @@ title: Home
         <div class="creation-header-group">
           <div class="creation-meta-top">
             <span class="creation-date">{{ latest_creation.date | date: "%B %d, %Y" }}</span>
+            {% if latest_creation.album %}
+              <span class="dot-separator"></span>
+              <span class="creation-album">{{ latest_creation.album }}{% if latest_creation.track %} — Track {{ latest_creation.track }}{% endif %}</span>
+            {% endif %}
             {% if latest_creation.length %}
               <span class="dot-separator"></span>
               <span class="creation-length">{{ latest_creation.length }}</span>
@@ -60,6 +65,42 @@ title: Home
           </div>
         {% endif %}
       </div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery-section">
+  <div class="container">
+    <div class="section-label">Gallery</div>
+    <div class="creation-grid">
+      {% for creation in creations %}
+        {% unless creation.url == latest_creation.url %}
+          <a href="{{ creation.url | relative_url }}" class="grid-item">
+            <div class="grid-video-container">
+              <video 
+                src="{{ creation.video_url | relative_url }}" 
+                poster="{{ creation.poster_url | relative_url }}"
+                muted 
+                loop 
+                playsinline></video>
+            </div>
+            <div class="grid-info">
+              <h3 class="grid-title">{{ creation.title }}</h3>
+              <div class="grid-meta">
+                <span>{{ creation.date | date: "%B %d, %Y" }}</span>
+                {% if creation.album %}
+                  <span class="dot-separator"></span>
+                  <span>{{ creation.album }}{% if creation.track %} #{{ creation.track }}{% endif %}</span>
+                {% endif %}
+                {% if creation.length %}
+                  <span class="dot-separator"></span>
+                  <span>{{ creation.length }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        {% endunless %}
+      {% endfor %}
     </div>
   </div>
 </section>
@@ -127,6 +168,10 @@ title: Home
     box-shadow: 0 60px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
+  }
+
+  .video-card.large {
+    border-radius: 40px;
   }
   
   .video-card:hover {
@@ -215,8 +260,84 @@ title: Home
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255,255,255,0.05);
   }
-  
+
+  .gallery-section {
+    padding: 6rem 0 12rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .section-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.3;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+
+  .creation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 3rem;
+  }
+
+  .grid-item {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .grid-item:hover {
+    transform: translateY(-8px);
+  }
+
+  .grid-video-container {
+    aspect-ratio: 16/9;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .grid-video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0.8;
+    transition: opacity 0.4s;
+  }
+
+  .grid-item:hover .grid-video-container video {
+    opacity: 1;
+  }
+
+  .grid-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .grid-meta {
+    font-size: 0.85rem;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
   @media (max-width: 768px) {
+    .creation-grid {
+      grid-template-columns: 1fr;
+    }
+    .gallery-section {
+      padding: 4rem 0 8rem;
+    }
     .video-container { border-radius: 20px; }
     .video-card { border-radius: 20px; }
     :root {
