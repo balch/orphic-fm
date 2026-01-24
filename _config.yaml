@@ -13,6 +13,9 @@ collections:
 navigation:
   - title: Music by Orpheus
     url: /
+  - title: Songs
+    expandable: true
+    children: albums
   - title: Articles
     expandable: true
     children:

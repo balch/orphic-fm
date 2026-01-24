@@ -12,6 +12,10 @@ title: Home
 
 {% assign albums = site.albums | sort: 'date' | reverse %}
 {% assign latest_album = albums | first %}
+{% if latest_album.album %}
+{% assign latest_album_slug = latest_album.album | slugify %}
+{% assign latest_album_url = "/albums/" | append: latest_album_slug | append: "/" %}
+{% endif %}
 
 {% if latest_album %}
 <section id="featured-album" class="featured-album-section">
@@ -43,7 +47,7 @@ title: Home
             <span class="album-date">{{ latest_album.date | date: "%B %d, %Y" }}</span>
             {% if latest_album.album %}
               <span class="dot-separator"></span>
-              <span class="album-album">{{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}</span>
+              <a class="album-album" href="{{ latest_album_url | relative_url }}">{{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}</a>
             {% endif %}
             {% if latest_album.length %}
               <span class="dot-separator"></span>
@@ -230,6 +234,16 @@ title: Home
     height: 4px;
     background: currentColor;
     border-radius: 50%;
+  }
+
+  .album-album {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+  }
+  .album-album:hover {
+    opacity: 1;
   }
   
   .album-display-title {
