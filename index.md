@@ -22,7 +22,7 @@ title: Home
           <video 
             src="{{ latest_creation.video_url | relative_url }}" 
             class="video-lightbox-trigger"
-            poster="{{ latest_creation.poster_url | relative_url }}"
+            {% if latest_creation.poster_url %}poster="{{ latest_creation.poster_url | relative_url }}"{% endif %}
             playsinline 
             loop 
             muted 
@@ -79,7 +79,7 @@ title: Home
             <div class="grid-video-container">
               <video 
                 src="{{ creation.video_url | relative_url }}" 
-                poster="{{ creation.poster_url | relative_url }}"
+                {% if creation.poster_url %}poster="{{ creation.poster_url | relative_url }}"{% endif %}
                 class="video-lightbox-trigger"
                 controls
                 loop 

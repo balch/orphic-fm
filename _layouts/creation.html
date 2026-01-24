@@ -21,7 +21,7 @@ layout: default
           <video 
             src="{{ page.video_url | relative_url }}" 
             class="video-lightbox-trigger"
-            poster="{{ page.poster_url | relative_url }}"
+            {% if page.poster_url %}poster="{{ page.poster_url | relative_url }}"{% endif %}
             playsinline 
             loop 
             muted 
