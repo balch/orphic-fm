@@ -6,7 +6,7 @@ title: Home
 <section class="hero-section">
   <div class="hero-content">
     <h1 class="hero-title">Orphic FM</h1>
-    <p class="hero-subtitle">Music is semi-random math (with structure)</p>
+    <p class="hero-subtitle">{{ site.description }}</p>
   </div>
 </section>
 
@@ -66,7 +66,7 @@ title: Home
         {% endif %}
       </div>
     </div>
-  </div>
+    </div>
 </section>
 
 <section class="gallery-section">
