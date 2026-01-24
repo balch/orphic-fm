@@ -2,11 +2,11 @@
 layout: default
 ---
 
-<article class="creation-detail">
+<article class="album-detail">
   <div class="container narrow">
-    <header class="creation-header">
-      <h1 class="creation-title">{{ page.title }}</h1>
-      <div class="creation-meta">
+    <header class="album-header">
+      <h1 class="album-title">{{ page.title }}</h1>
+      <div class="album-meta">
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
         {% if page.length %}
           <span class="separator">&bull;</span>
@@ -15,9 +15,9 @@ layout: default
       </div>
     </header>
 
-    <div class="creation-video-container">
+    <div class="album-video-container">
       <div class="video-card">
-        <div class="video-wrapper">
+        <div class="video-container">
           <video 
             src="{{ page.video_url | relative_url }}" 
             class="video-lightbox-trigger"
@@ -37,8 +37,8 @@ layout: default
       </div>
     </div>
 
-    <div class="creation-content">
-      <div class="creation-description">
+    <div class="album-content">
+      <div class="album-description">
         {{ content }}
         {% if page.description %}
           <p>{{ page.description }}</p>
@@ -46,7 +46,7 @@ layout: default
       </div>
 
       {% if page.tags %}
-        <div class="creation-tags">
+        <div class="album-tags">
           {% for tag in page.tags %}
             <span class="tag">#{{ tag }}</span>
           {% endfor %}
@@ -54,7 +54,7 @@ layout: default
       {% endif %}
     </div>
 
-    <footer class="creation-footer">
+    <footer class="album-footer">
       <a href="{{ '/' | relative_url }}" class="back-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -67,68 +67,116 @@ layout: default
 </article>
 
 <style>
-  .creation-detail {
+  .album-detail {
     padding: 6rem 0;
   }
   .narrow {
     max-width: 800px;
   }
-  .creation-header {
+  .album-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
   }
-  .creation-title {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
+  .album-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.04em;
   }
-  .creation-meta {
-    font-size: 0.9rem;
-    opacity: 0.5;
+  .album-meta {
+    font-size: 0.85rem;
+    opacity: 0.4;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
+    font-weight: 600;
   }
   .separator {
-    margin: 0 0.5rem;
+    margin: 0 0.75rem;
+    opacity: 0.3;
   }
-  .creation-video-container {
-    margin-bottom: 3rem;
+  .album-video-container {
+    margin: 0 auto 5rem;
+    max-width: 680px;
+    width: 100%;
   }
-  .creation-content {
-    font-size: 1.1rem;
-    line-height: 1.6;
+  .video-card {
+    border-radius: 32px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    aspect-ratio: 16 / 9;
+  }
+  .video-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    cursor: pointer;
+  }
+  .album-content {
+    font-size: 1.2rem;
+    line-height: 1.8;
     margin-top: 2rem;
+    opacity: 0.9;
   }
-  .creation-tags {
-    margin-top: 2rem;
+  .album-description {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .album-tags {
+    margin-top: 3rem;
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    justify-content: center;
   }
   .tag {
-    font-size: 0.85rem;
-    opacity: 0.6;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    opacity: 0.5;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.4rem 1rem;
     border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s;
   }
-  .creation-footer {
-    margin-top: 6rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+  .tag:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .album-footer {
+    margin-top: 8rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
   }
   .back-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    opacity: 0.6;
-    transition: opacity 0.2s;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    opacity: 0.5;
+    transition: all 0.3s;
     text-decoration: none;
     color: inherit;
   }
   .back-link:hover {
     opacity: 1;
+    transform: translateX(-4px);
+  }
+  
+  @media (max-width: 768px) {
+    .album-detail { padding: 4rem 0; }
+    .album-title { font-size: 2.2rem; }
+    .album-video-container { margin-bottom: 3rem; }
+    .video-card { border-radius: 20px; }
   }
 </style>

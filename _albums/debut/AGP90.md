@@ -1,5 +1,5 @@
 ---
-layout: creation
+layout: album
 title: "AGP 9.0"
 description: "@Preview: Celebration song for the Gradle Plugin migration"
 date: 2026-01-24

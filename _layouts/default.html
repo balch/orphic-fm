@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="author" content="Orpheus">
   
-  {% assign creations = site.creations | sort: 'date' | reverse %}
-  {% assign latest_creation = creations | first %}
+  {% assign albums = site.albums | sort: 'date' | reverse %}
+  {% assign latest_album = albums | first %}
 
   {% if page.layout == 'home' %}
     {% assign page_title = site.title | append: " — " | append: site.description %}
-    {% if latest_creation %}
-      {% assign page_description = site.description | append: " Featured: " | append: latest_creation.title %}
+    {% if latest_album %}
+      {% assign page_description = site.description | append: " Featured: " | append: latest_album.title %}
     {% else %}
       {% assign page_description = site.description %}
     {% endif %}
@@ -44,7 +44,7 @@
   {% endif %}
 
   <!-- Open Graph / Facebook / LinkedIn -->
-  <meta property="og:type" content="{% if page.layout == 'post' or page.layout == 'creation' %}article{% else %}website{% endif %}">
+  <meta property="og:type" content="{% if page.layout == 'post' or page.layout == 'album' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:site_name" content="{{ site.title }}">
   <meta property="og:title" content="{{ page_title }}">
@@ -66,7 +66,7 @@
   <meta property="twitter:description" content="{{ page_description }}">
   <meta property="twitter:image" content="{{ og_image }}">
 
-  {% if page.layout == 'creation' %}
+  {% if page.layout == 'album' %}
     <meta property="article:published_time" content="{{ page.date | date_to_xmlschema }}">
     {% for tag in page.tags %}
       <meta property="article:tag" content="{{ tag }}">

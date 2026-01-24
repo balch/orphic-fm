@@ -1,5 +1,5 @@
 ---
-layout: creation
+layout: album
 title: "Reprise Surprise"
 description: "Gemini Flash 3.0 with a (too) heavy drum backing"
 date: 2026-01-13
