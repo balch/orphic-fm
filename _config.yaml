@@ -11,7 +11,7 @@ collections:
     permalink: /creation/:path/
 
 navigation:
-  - title: Home
+  - title: Music by Orpheus
     url: /
 social:
   github: balch
