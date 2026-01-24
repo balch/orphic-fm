@@ -90,6 +90,11 @@
   <link rel="icon" type="image/png" sizes="192x192" href="{{ '/assets/images/favicon-192.png' | relative_url }}">
   <link rel="icon" type="image/png" sizes="512x512" href="{{ '/assets/images/favicon-512.png' | relative_url }}">
   <link rel="apple-touch-icon" href="{{ '/assets/images/favicon-512.png' | relative_url }}">
+  <style>
+    @view-transition {
+      navigation: auto;
+    }
+  </style>
 </head>
 
 <body class="layout-{{ page.layout }}">
@@ -118,6 +123,12 @@
               {% for post in site.posts %}
               <li><a href="{{ post.url | relative_url }}"><span class="nav-post-title">{{ post.title }}</span><span
                     class="nav-post-date">{{ post.date | date: "%b %-d, %Y" }}</span></a></li>
+              {% endfor %}
+              {% elsif item.children == 'albums' %}
+              {% assign nav_albums = site.albums | sort: "date" | reverse %}
+              {% for track in nav_albums %}
+              <li><a href="{{ track.url | relative_url }}"><span class="nav-post-title">{{ track.title }}</span><span
+                    class="nav-post-date">{{ track.date | date: "%b %-d, %Y" }}</span></a></li>
               {% endfor %}
               {% elsif item.children %}
               {% for child in item.children %}
@@ -233,7 +244,7 @@
       }
 
       // Image and Video Lightbox for blog posts and home page
-      const contentContainer = document.querySelector('.post-content') || document.querySelector('.home');
+      const contentContainer = document.querySelector('.post-content') || document.querySelector('.home') || document.querySelector('.album-collection') || document.querySelector('.album-detail');
       if (contentContainer) {
         // Create lightbox elements with video support
         const lightbox = document.createElement('div');
