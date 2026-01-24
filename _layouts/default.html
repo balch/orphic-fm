@@ -119,6 +119,10 @@
               <li><a href="{{ post.url | relative_url }}"><span class="nav-post-title">{{ post.title }}</span><span
                     class="nav-post-date">{{ post.date | date: "%b %-d, %Y" }}</span></a></li>
               {% endfor %}
+              {% elsif item.children %}
+              {% for child in item.children %}
+              <li><a href="{{ child.url | relative_url }}">{{ child.title }}</a></li>
+              {% endfor %}
               {% endif %}
             </ul>
           </li>
