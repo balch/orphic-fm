@@ -10,19 +10,19 @@ title: Home
   </div>
 </section>
 
-{% assign creations = site.creations | sort: 'date' | reverse %}
-{% assign latest_creation = creations | first %}
+{% assign albums = site.albums | sort: 'date' | reverse %}
+{% assign latest_album = albums | first %}
 
-{% if latest_creation %}
-<section id="featured-creation" class="featured-creation-section">
+{% if latest_album %}
+<section id="featured-album" class="featured-album-section">
   <div class="container narrow">
-    <div class="creation-container">
+    <div class="album-container">
       <div class="video-card large">
         <div class="video-container">
           <video 
-            src="{{ latest_creation.video_url | relative_url }}" 
+            src="{{ latest_album.video_url | relative_url }}" 
             class="video-lightbox-trigger"
-            {% if latest_creation.poster_url %}poster="{{ latest_creation.poster_url | relative_url }}"{% endif %}
+            {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
             playsinline 
             loop 
             muted 
@@ -37,30 +37,30 @@ title: Home
         </div>
       </div>
 
-      <div class="creation-info">
-        <div class="creation-header-group">
-          <div class="creation-meta-top">
-            <span class="creation-date">{{ latest_creation.date | date: "%B %d, %Y" }}</span>
-            {% if latest_creation.album %}
+      <div class="album-info">
+        <div class="album-header-group">
+          <div class="album-meta-top">
+            <span class="album-date">{{ latest_album.date | date: "%B %d, %Y" }}</span>
+            {% if latest_album.album %}
               <span class="dot-separator"></span>
-              <span class="creation-album">{{ latest_creation.album }}{% if latest_creation.track %} — Track {{ latest_creation.track }}{% endif %}</span>
+              <span class="album-album">{{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}</span>
             {% endif %}
-            {% if latest_creation.length %}
+            {% if latest_album.length %}
               <span class="dot-separator"></span>
-              <span class="creation-length">{{ latest_creation.length }}</span>
+              <span class="album-length">{{ latest_album.length }}</span>
             {% endif %}
           </div>
-          <h2 class="creation-display-title">{{ latest_creation.title }}</h2>
+          <h2 class="album-display-title">{{ latest_album.title }}</h2>
         </div>
 
-        <div class="creation-body-text">
-          {{ latest_creation.description }}
+        <div class="album-body-text">
+          {{ latest_album.description }}
         </div>
 
-        {% if latest_creation.tags %}
-          <div class="creation-tags-list">
-            {% for tag in latest_creation.tags %}
-              <span class="creation-tag">#{{ tag }}</span>
+        {% if latest_album.tags %}
+          <div class="album-tags-list">
+            {% for tag in latest_album.tags %}
+              <span class="album-tag">#{{ tag }}</span>
             {% endfor %}
           </div>
         {% endif %}
@@ -72,14 +72,14 @@ title: Home
 <section class="gallery-section">
   <div class="container">
     <div class="section-label">Gallery</div>
-    <div class="creation-grid">
-      {% for creation in creations %}
-        {% unless creation.url == latest_creation.url %}
+    <div class="album-grid">
+      {% for album in albums %}
+        {% unless album.url == latest_album.url %}
           <div class="grid-item">
             <div class="grid-video-container">
               <video 
-                src="{{ creation.video_url | relative_url }}" 
-                {% if creation.poster_url %}poster="{{ creation.poster_url | relative_url }}"{% endif %}
+                src="{{ album.video_url | relative_url }}" 
+                {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
                 class="video-lightbox-trigger"
                 controls
                 loop 
@@ -91,18 +91,18 @@ title: Home
               </div>
             </div>
             <div class="grid-info">
-              <a href="{{ creation.url | relative_url }}" class="grid-title-link">
-                <h3 class="grid-title">{{ creation.title }}</h3>
+              <a href="{{ album.url | relative_url }}" class="grid-title-link">
+                <h3 class="grid-title">{{ album.title }}</h3>
               </a>
               <div class="grid-meta">
-                <span>{{ creation.date | date: "%B %d, %Y" }}</span>
-                {% if creation.album %}
+                <span>{{ album.date | date: "%B %d, %Y" }}</span>
+                {% if album.album %}
                   <span class="dot-separator"></span>
-                  <span>{{ creation.album }}{% if creation.track %} #{{ creation.track }}{% endif %}</span>
+                  <span>{{ album.album }}{% if album.track %} #{{ album.track }}{% endif %}</span>
                 {% endif %}
-                {% if creation.length %}
+                {% if album.length %}
                   <span class="dot-separator"></span>
-                  <span>{{ creation.length }}</span>
+                  <span>{{ album.length }}</span>
                 {% endif %}
               </div>
             </div>
@@ -115,7 +115,7 @@ title: Home
 {% else %}
 <section class="loading-state" style="text-align: center; padding: 10rem 0;">
   <div class="container">
-    <p style="opacity: 0.3; font-size: 1.2rem; margin-bottom: 2rem;">Waiting for creations to sync...</p>
+    <p style="opacity: 0.3; font-size: 1.2rem; margin-bottom: 2rem;">Waiting for albums to sync...</p>
     <div style="font-size: 0.9rem; opacity: 0.5; max-width: 500px; margin: 0 auto; line-height: 1.6;">
       <p>If you just added a collection to <code>_config.yaml</code>, please <strong>restart</strong> the Jekyll server to pick up the new structure.</p>
     </div>
@@ -154,7 +154,7 @@ title: Home
     letter-spacing: 0.05em;
   }
   
-  .featured-creation-section {
+  .featured-album-section {
     padding-bottom: 12rem;
     position: relative;
   }
@@ -163,7 +163,7 @@ title: Home
     max-width: 1000px;
   }
   
-  .creation-container {
+  .album-container {
     display: flex;
     flex-direction: column;
     gap: 4rem;
@@ -202,17 +202,17 @@ title: Home
     cursor: pointer;
   }
   
-  .creation-info {
+  .album-info {
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
   }
   
-  .creation-header-group {
+  .album-header-group {
     margin-bottom: 2rem;
   }
   
-  .creation-meta-top {
+  .album-meta-top {
     font-size: 0.8rem;
     font-weight: 600;
     opacity: 0.3;
@@ -232,14 +232,14 @@ title: Home
     border-radius: 50%;
   }
   
-  .creation-display-title {
+  .album-display-title {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 700;
     letter-spacing: -0.03em;
     margin: 0;
   }
   
-  .creation-body-text {
+  .album-body-text {
     font-size: 1.25rem;
     line-height: 1.7;
     opacity: 0.7;
@@ -247,14 +247,14 @@ title: Home
     font-weight: 400;
   }
   
-  .creation-tags-list {
+  .album-tags-list {
     display: flex;
     gap: 0.5rem;
     justify-content: center;
     flex-wrap: wrap;
   }
   
-  .creation-tag {
+  .album-tag {
     font-size: 0.8rem;
     opacity: 0.4;
     padding: 0.5rem 1.2rem;
@@ -263,7 +263,7 @@ title: Home
     transition: all 0.3s;
   }
   
-  .creation-tag:hover {
+  .album-tag:hover {
     opacity: 1;
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255,255,255,0.05);
@@ -284,7 +284,7 @@ title: Home
     text-align: center;
   }
 
-  .creation-grid {
+  .album-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
@@ -386,7 +386,7 @@ title: Home
   }
 
   @media (max-width: 768px) {
-    .creation-grid {
+    .album-grid {
       grid-template-columns: 1fr;
     }
     .gallery-section {
@@ -399,8 +399,8 @@ title: Home
     }
     .hero-section { padding: 8rem 0 4rem; }
     .hero-subtitle { margin-top: 1.5rem; }
-    .creation-container { gap: 2.5rem; }
-    .creation-display-title { font-size: clamp(2rem, 8vw, 3rem); }
-    .creation-body-text { font-size: 1.1rem; margin-bottom: 2rem; }
+    .album-container { gap: 2.5rem; }
+    .album-display-title { font-size: clamp(2rem, 8vw, 3rem); }
+    .album-body-text { font-size: 1.1rem; margin-bottom: 2rem; }
   }
 </style>

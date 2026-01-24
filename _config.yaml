@@ -6,9 +6,9 @@ plugins:
   - jekyll-redirect-from
 
 collections:
-  creations:
+  albums:
     output: true
-    permalink: /creation/:path/
+    permalink: /albums/:path/
 
 navigation:
   - title: Music by Orpheus
