@@ -262,6 +262,7 @@
 
         // Track if we pushed a history state for the lightbox
         let lightboxHistoryPushed = false;
+        let currentSourceVideo = null;
 
         // Open lightbox for image
         const openImageLightbox = (src, alt) => {
@@ -280,12 +281,26 @@
         };
 
         // Open lightbox for video
-        const openVideoLightbox = (src) => {
+        const openVideoLightbox = (src, sourceVideo) => {
+          if (sourceVideo) {
+            if (currentSourceVideo && currentSourceVideo !== sourceVideo) {
+              currentSourceVideo.pause();
+            }
+            currentSourceVideo = sourceVideo;
+            currentSourceVideo.pause();
+          }
+
           lightboxVideo.src = src;
           lightboxVideo.style.display = 'block';
           lightboxImg.style.display = 'none';
           lightbox.classList.add('active');
           document.body.style.overflow = 'hidden';
+
+          if (sourceVideo) {
+            lightboxVideo.currentTime = sourceVideo.currentTime;
+            lightboxVideo.volume = sourceVideo.volume;
+            lightboxVideo.muted = sourceVideo.muted;
+          }
           
           // Try to play with error handling for browser blocks
           const playPromise = lightboxVideo.play();
@@ -310,7 +325,13 @@
 
           lightbox.classList.remove('active');
           document.body.style.overflow = '';
+          
           lightboxVideo.pause();
+          if (currentSourceVideo) {
+            currentSourceVideo.currentTime = lightboxVideo.currentTime;
+            currentSourceVideo.play().catch(e => console.log("Error resuming video", e));
+            currentSourceVideo = null;
+          }
           lightboxVideo.src = '';
 
           if (!fromPopState && lightboxHistoryPushed) {
@@ -346,14 +367,14 @@
             expandOverlay.addEventListener('click', (e) => {
               e.preventDefault();
               e.stopPropagation();
-              openVideoLightbox(video.src || video.querySelector('source')?.src);
+              openVideoLightbox(video.src || video.querySelector('source')?.src, video);
             });
           } else {
             // No expand overlay, video itself triggers lightbox
             video.style.cursor = 'pointer';
             video.addEventListener('click', (e) => {
               e.preventDefault();
-              openVideoLightbox(video.src || video.querySelector('source')?.src);
+              openVideoLightbox(video.src || video.querySelector('source')?.src, video);
             });
           }
           
