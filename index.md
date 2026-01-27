@@ -232,6 +232,7 @@ title: Home
     justify-content: center;
     gap: 1rem;
     margin-bottom: 1rem;
+    will-change: transform, opacity, max-height;
   }
   
   .dot-separator {
@@ -264,6 +265,8 @@ title: Home
     opacity: 0.7;
     margin-bottom: 3rem;
     font-weight: 400;
+    will-change: transform, opacity, max-height;
+    overflow: hidden;
   }
   
   .album-tags-list {
@@ -430,7 +433,8 @@ title: Home
     .hero-section { padding: 8rem 0 4rem; }
     .hero-subtitle { margin-top: 1.5rem; }
     .album-container { gap: 2.5rem; }
-    .album-display-title { font-size: clamp(2rem, 8vw, 3rem); }
-    .album-body-text { font-size: 1.1rem; margin-bottom: 2rem; }
+    .album-display-title { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .album-meta-top { display: none; }
+    .album-body-text { font-size: 1rem; margin-bottom: 1.5rem; will-change: transform, opacity, max-height; }
   }
 </style>
