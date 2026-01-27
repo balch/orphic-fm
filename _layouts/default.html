@@ -243,6 +243,106 @@
         });
       }
 
+      // Collapse album description on scroll
+      const collapseTargets = document.querySelectorAll('.album-description, .album-body-text, .album-meta, .album-meta-top');
+      if (collapseTargets.length > 0) {
+        let targetData = [];
+
+        const updateTargetData = () => {
+          targetData = Array.from(collapseTargets).map(el => {
+            const style = window.getComputedStyle(el);
+            // Temporarily remove our inline styles to measure original values
+            const oldMaxHeight = el.style.maxHeight;
+            const oldOpacity = el.style.opacity;
+            const oldMT = el.style.marginTop;
+            const oldMB = el.style.marginBottom;
+            const oldTrans = el.style.transform;
+
+            el.style.maxHeight = 'none';
+            el.style.opacity = '';
+            el.style.marginTop = '';
+            el.style.marginBottom = '';
+            el.style.transform = '';
+
+            const data = {
+              el: el,
+              marginTop: parseFloat(style.marginTop) || 0,
+              marginBottom: parseFloat(style.marginBottom) || 0,
+              originalOpacity: parseFloat(style.opacity) || 1,
+              maxHeight: el.scrollHeight
+            };
+
+            // Restore
+            el.style.maxHeight = oldMaxHeight;
+            el.style.opacity = oldOpacity;
+            el.style.marginTop = oldMT;
+            el.style.marginBottom = oldMB;
+            el.style.transform = oldTrans;
+
+            // Set static animation properties
+            el.style.transformOrigin = 'top center';
+            el.style.overflow = 'hidden';
+
+            return data;
+          });
+        };
+
+        let currentScrollY = window.pageYOffset;
+        let targetScrollY = window.pageYOffset;
+        let ticking = false;
+
+        const updateAnimation = () => {
+          // Smoothly interpolate scroll value (lerp)
+          currentScrollY += (targetScrollY - currentScrollY) * 0.15;
+          
+          const threshold = 200;
+          const rawFraction = Math.max(0, 1 - currentScrollY / threshold);
+          // Smoothstep easing for more natural velocity
+          const fraction = rawFraction * rawFraction * (3 - 2 * rawFraction);
+
+          targetData.forEach(data => {
+            data.el.style.opacity = (fraction * data.originalOpacity).toFixed(3);
+            data.el.style.maxHeight = (fraction * data.maxHeight).toFixed(1) + 'px';
+            data.el.style.marginTop = (fraction * data.marginTop).toFixed(1) + 'px';
+            data.el.style.marginBottom = (fraction * data.marginBottom).toFixed(1) + 'px';
+            data.el.style.pointerEvents = fraction < 0.1 ? 'none' : 'auto';
+            data.el.style.transform = `scale(${ (0.98 + (fraction * 0.02)).toFixed(3) })`;
+          });
+
+          if (Math.abs(targetScrollY - currentScrollY) > 0.1) {
+            window.requestAnimationFrame(updateAnimation);
+          } else {
+            ticking = false;
+          }
+        };
+
+        const handleDescScroll = (instant = false) => {
+          targetScrollY = window.pageYOffset;
+          if (instant) currentScrollY = targetScrollY;
+          if (!ticking) {
+            ticking = true;
+            window.requestAnimationFrame(updateAnimation);
+          }
+        };
+
+        updateTargetData();
+
+        window.addEventListener('scroll', () => handleDescScroll());
+
+        window.addEventListener('resize', () => {
+          updateTargetData();
+          handleDescScroll(true);
+        });
+
+        window.addEventListener('load', () => {
+          updateTargetData();
+          handleDescScroll(true);
+        });
+
+        // Initial state
+        handleDescScroll(true);
+      }
+
       // Image and Video Lightbox for blog posts and home page
       const contentContainer = document.querySelector('.post-content') || document.querySelector('.home') || document.querySelector('.album-collection') || document.querySelector('.album-detail');
       if (contentContainer) {

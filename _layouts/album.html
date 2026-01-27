@@ -33,27 +33,29 @@ layout: default
   <div class="container narrow">
     <header class="album-header">
       <div class="album-header-top">
-        <h1 class="album-title">{{ page.title }}</h1>
-        <div class="share-container">
-          <button class="share-btn" aria-label="Share this song" title="Share">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="18" cy="5" r="3"></circle>
-              <circle cx="6" cy="12" r="3"></circle>
-              <circle cx="18" cy="19" r="3"></circle>
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-            </svg>
-          </button>
-          <div class="share-dropdown">
-            <button class="share-dropdown-item" data-action="copy">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        <div class="album-badge">
+          <h1 class="album-title">{{ page.title }}</h1>
+          <div class="share-container">
+            <button class="share-btn" aria-label="Share this song" title="Share">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
               </svg>
-              <span>Copy link</span>
             </button>
+            <div class="share-dropdown">
+              <button class="share-dropdown-item" data-action="copy">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Copy link</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -294,12 +296,14 @@ layout: default
     align-items: center;
     justify-content: center;
     gap: 1.5rem;
+    margin-bottom: 1.5rem;
   }
   .album-title {
     font-size: clamp(2.5rem, 6vw, 4rem);
     font-weight: 700;
-    margin-bottom: 0.75rem;
+    margin: 0;
     letter-spacing: -0.04em;
+    line-height: 1.1;
   }
   .album-meta {
     font-size: 0.85rem;
@@ -324,7 +328,9 @@ layout: default
   .album-badge {
     display: inline-flex;
     align-items: center;
-    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
     vertical-align: middle;
   }
   .album-art-icon-link {
@@ -384,6 +390,8 @@ layout: default
   .album-description {
     max-width: 680px;
     margin: 0 auto;
+    will-change: transform, opacity, max-height;
+    overflow: hidden;
   }
   .album-tags {
     margin-top: 3rem;
@@ -499,10 +507,13 @@ layout: default
   
   @media (max-width: 768px) {
     .album-detail { padding: 4rem 0; }
-    .album-title { font-size: 2.2rem; }
+    .album-title { font-size: 2rem; }
     .album-video-container { margin-bottom: 3rem; }
     .video-card { border-radius: 20px; }
     .album-header-top { flex-direction: column; gap: 0.5rem; }
-    .album-tracklist li { flex-direction: column; align-items: flex-start; }
+    .album-tracklist li { border-radius: 10px; }
+    .track-link { padding: 0.6rem 0.8rem; }
+    .track-title { font-size: 0.95rem; }
+    .track-meta { display: none; }
   }
 </style>
