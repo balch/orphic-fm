@@ -58,7 +58,7 @@ title: Home
         </div>
 
         <div class="album-body-text">
-          {{ latest_album.description }}
+          {{ latest_album.description | markdownify }}
         </div>
 
         {% if latest_album.tags %}
@@ -70,7 +70,7 @@ title: Home
         {% endif %}
       </div>
     </div>
-    </div>
+  </div>
 </section>
 
 <section class="gallery-section">
@@ -109,6 +109,11 @@ title: Home
                   <span>{{ album.length }}</span>
                 {% endif %}
               </div>
+              {% if album.description %}
+                <div class="grid-description">
+                  {{ album.description | markdownify }}
+                </div>
+              {% endif %}
             </div>
           </div>
         {% endunless %}
@@ -397,6 +402,17 @@ title: Home
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .grid-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   @media (max-width: 768px) {
