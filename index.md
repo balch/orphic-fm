@@ -20,35 +20,47 @@ title: Home
 {% if latest_album %}
 <section id="featured-album" class="featured-album-section">
   <div class="container narrow">
+    <div class="section-label">Featured Track</div>
     <div class="album-container">
-      <div class="video-card large">
-        <div class="video-container">
-          <video 
-            src="{{ latest_album.video_url | relative_url }}" 
-            class="video-lightbox-trigger"
-            {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
-            playsinline 
-            loop 
-            muted 
-            autoplay></video>
-          <div class="sound-toggle" aria-label="Toggle Sound">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
-              <line x1="23" y1="9" x2="17" y2="15"></line>
-              <line x1="17" y1="9" x2="23" y2="15"></line>
-            </svg>
+      <div class="video-side">
+        <div class="video-card large">
+          <div class="video-container">
+            <video 
+              src="{{ latest_album.video_url | relative_url }}" 
+              {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
+              playsinline 
+              loop 
+              muted 
+              autoplay
+              controls></video>
           </div>
         </div>
+
+        {% if latest_album.tags %}
+          <div class="album-tags-list">
+            {% for tag in latest_album.tags %}
+              <span class="album-tag">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% if latest_album.album %}
+          <div class="album-link-section mobile-only">
+            <span class="album-link-label">From the album</span>
+            <a class="album-link" href="{{ latest_album_url | relative_url }}">
+              {{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 17L17 7M17 7H7M17 7v10"/>
+              </svg>
+            </a>
+          </div>
+        {% endif %}
       </div>
 
       <div class="album-info">
         <div class="album-header-group">
           <div class="album-meta-top">
             <span class="album-date">{{ latest_album.date | date: "%B %d, %Y" }}</span>
-            {% if latest_album.album %}
-              <span class="dot-separator"></span>
-              <a class="album-album" href="{{ latest_album_url | relative_url }}">{{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}</a>
-            {% endif %}
             {% if latest_album.length %}
               <span class="dot-separator"></span>
               <span class="album-length">{{ latest_album.length }}</span>
@@ -57,15 +69,21 @@ title: Home
           <h2 class="album-display-title">{{ latest_album.title }}</h2>
         </div>
 
-        <div class="album-body-text">
-          {{ latest_album.description | markdownify }}
-        </div>
+        {% if latest_album.description %}
+          <div class="album-body-text">
+            {{ latest_album.description | markdownify }}
+          </div>
+        {% endif %}
 
-        {% if latest_album.tags %}
-          <div class="album-tags-list">
-            {% for tag in latest_album.tags %}
-              <span class="album-tag">#{{ tag }}</span>
-            {% endfor %}
+        {% if latest_album.album %}
+          <div class="album-link-section desktop-only">
+            <span class="album-link-label">From the album</span>
+            <a class="album-link" href="{{ latest_album_url | relative_url }}">
+              {{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M7 17L17 7M17 7H7M17 7v10"/>
+              </svg>
+            </a>
           </div>
         {% endif %}
       </div>
@@ -138,7 +156,7 @@ title: Home
   }
 
   .hero-section {
-    padding: 12rem 0 6rem;
+    padding: 8rem 0 4rem;
     text-align: center;
     position: relative;
     z-index: 1;
@@ -156,26 +174,33 @@ title: Home
   }
   
   .hero-subtitle {
-    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
     opacity: 0.4;
     font-weight: 300;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     letter-spacing: 0.05em;
   }
   
   .featured-album-section {
-    padding-bottom: 12rem;
+    padding-bottom: 8rem;
     position: relative;
   }
   
   .narrow {
-    max-width: 1000px;
+    max-width: 850px;
   }
   
   .album-container {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3.5rem;
+    align-items: flex-start;
+  }
+
+  .video-side {
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 1.5rem;
   }
   
   .video-card {
@@ -212,9 +237,10 @@ title: Home
   }
   
   .album-info {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
   
   .album-header-group {
@@ -229,10 +255,10 @@ title: Home
     letter-spacing: 0.2em;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 1rem;
-    margin-bottom: 1rem;
-    will-change: transform, opacity, max-height;
+    margin-bottom: 0.75rem;
+    will-change: transform, opacity;
   }
   
   .dot-separator {
@@ -253,26 +279,76 @@ title: Home
   }
   
   .album-display-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
     letter-spacing: -0.03em;
     margin: 0;
+    line-height: 1.1;
   }
   
   .album-body-text {
-    font-size: 1.25rem;
-    line-height: 1.7;
+    font-size: 1.1rem;
+    line-height: 1.6;
     opacity: 0.7;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     font-weight: 400;
-    will-change: transform, opacity, max-height;
     overflow: hidden;
   }
+
+  .album-body-text p {
+    margin: 0;
+  }
+
+  .album-link-section {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+
+  .album-link-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.75rem;
+  }
+
+  .album-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--accent-primary, #8b5cf6);
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: rgba(139, 92, 246, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .album-link:hover {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+  }
+
+  .album-link svg {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .album-link:hover svg {
+    transform: translate(2px, -2px);
+  }
+  
   
   .album-tags-list {
     display: flex;
     gap: 0.5rem;
-    justify-content: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
   }
   
@@ -418,7 +494,11 @@ title: Home
     overflow: hidden;
   }
 
+  .mobile-only { display: none; }
+
   @media (max-width: 768px) {
+    .mobile-only { display: block; }
+    .desktop-only { display: none; }
     .album-grid {
       grid-template-columns: 1fr;
     }
@@ -432,9 +512,15 @@ title: Home
     }
     .hero-section { padding: 8rem 0 4rem; }
     .hero-subtitle { margin-top: 1.5rem; }
-    .album-container { gap: 2.5rem; }
+    .album-container { 
+      grid-template-columns: 1fr;
+      gap: 2rem; 
+    }
+    .album-info { text-align: center; order: -1; }
+    .album-link-section { text-align: center; }
+    .album-tags-list { justify-content: center; }
     .album-display-title { font-size: clamp(1.8rem, 8vw, 2.5rem); }
     .album-meta-top { display: none; }
-    .album-body-text { font-size: 1rem; margin-bottom: 1.5rem; will-change: transform, opacity, max-height; }
+    .album-body-text { font-size: 1rem; margin-bottom: 1.5rem; }
   }
 </style>
