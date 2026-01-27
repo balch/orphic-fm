@@ -6,5 +6,5 @@ date: 2026-01-24
 album: "Bootstrap"
 video_url: "/assets/albums/2026-01-11-Bootstrap/AGP9.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
-tags: ["AGP", "drums"]
+tags: ["manual", "drums", "organ", "pitch", "cowbell", "fm", "drone"]
 ---

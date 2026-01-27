@@ -44,7 +44,7 @@ layout: default
         </div>
       </div>
       {% if page.description %}
-        <p class="album-description">{{ page.description }}</p>
+        <div class="album-description">{{ page.description | markdownify }}</div>
       {% endif %}
       {% if album_tracks.size > 0 %}
         <div class="album-meta">
@@ -63,7 +63,7 @@ layout: default
               <div class="track-main">
                 <a href="{{ track.url | relative_url }}">{{ track.title }}</a>
                 {% if track.description %}
-                  <p>{{ track.description }}</p>
+                  {{ track.description | markdownify }}
                 {% endif %}
               </div>
               <div class="track-meta">
