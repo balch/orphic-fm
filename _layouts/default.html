@@ -44,7 +44,7 @@
   {% endif %}
 
   <!-- Open Graph / Facebook / LinkedIn -->
-  <meta property="og:type" content="{% if page.layout == 'post' or page.layout == 'album' %}article{% else %}website{% endif %}">
+  <meta property="og:type" content="{% if page.layout == 'post' or page.layout == 'album' or page.layout == 'album-collection' %}article{% else %}website{% endif %}">
   <meta property="og:url" content="{{ page.url | absolute_url }}">
   <meta property="og:site_name" content="{{ site.title }}">
   <meta property="og:title" content="{{ page_title }}">
