@@ -1606,25 +1606,47 @@ header.nav-hidden~main .post-header-sticky {
 footer {
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: 3rem 0 2rem;
+    padding: 3rem 0;
     margin-top: 6rem;
-    text-align: center;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
 }
 
 footer p {
     color: var(--text-secondary);
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
 }
 
 footer a {
     color: var(--text-secondary);
-    margin: 0 0.75rem;
+    font-size: 0.9rem;
     transition: var(--transition-smooth);
+    text-decoration: none;
 }
 
 footer a:hover {
     color: var(--accent-primary);
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
 }
 
 /* Bio Section */
