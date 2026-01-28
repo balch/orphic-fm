@@ -148,13 +148,17 @@
   </main>
 
   <footer>
-    <div class="container">
+    <div class="container footer-content">
       <p>&copy; {{ site.time | date: '%Y' }} {{ site.title }}. All rights reserved.</p>
-      <p>
+      <div class="footer-links">
+        <a href="https://balch.github.io">balch.github.io</a>
         {% if site.social.github %}
         <a href="https://github.com/{{ site.social.github }}">GitHub</a>
         {% endif %}
-      </p>
+        {% if site.social.linkedin %}
+        <a href="https://linkedin.com/in/{{ site.social.linkedin }}">LinkedIn</a>
+        {% endif %}
+      </div>
     </div>
   </footer>
 

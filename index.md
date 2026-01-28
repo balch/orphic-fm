@@ -169,20 +169,27 @@ title: Home
   .hero-title {
     font-size: var(--hero-font-size);
     font-weight: 800;
-    letter-spacing: -0.07em;
+    letter-spacing: -0.05em;
     margin: 0;
-    line-height: 0.85;
-    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+    line-height: 1.05;
+    padding-bottom: 0.05em;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.6) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.4));
   }
   
   .hero-subtitle {
     font-size: clamp(1rem, 1.5vw, 1.2rem);
-    opacity: 0.4;
-    font-weight: 300;
-    margin-top: 1.5rem;
-    letter-spacing: 0.05em;
+    opacity: 0.75;
+    font-weight: 400;
+    margin-top: 2rem;
+    letter-spacing: 0.02em;
+    max-width: 750px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+    color: var(--text-secondary);
   }
   
   .featured-album-section {
@@ -285,9 +292,9 @@ title: Home
   .album-display-title {
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     margin: 0;
-    line-height: 1.1;
+    line-height: 1.2;
   }
   
   .album-body-text {
@@ -377,13 +384,14 @@ title: Home
   }
 
   .section-label {
-    font-size: 0.8rem;
-    font-weight: 600;
-    opacity: 0.3;
+    font-size: 0.9rem;
+    font-weight: 700;
+    opacity: 0.7;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     margin-bottom: 4rem;
     text-align: center;
+    color: var(--text-primary);
   }
 
   .album-grid {

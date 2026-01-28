@@ -11,12 +11,7 @@ collections:
     permalink: /albums/:path/
 
 navigation:
-  - title: Music by Orpheus
-    url: /
-  - title: Songs
-    expandable: true
-    children: albums
-  - title: Articles
+  - title: Posts
     expandable: true
     children:
       - title: Coachella Dreams
@@ -25,3 +20,4 @@ navigation:
         url: https://balch.github.io/2026/01/03/hello-orpheus-fm.html
 social:
   github: balch
+  linkedin: balch
