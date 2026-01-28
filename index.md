@@ -10,8 +10,13 @@ title: Home
   </div>
 </section>
 
-{% assign albums = site.albums | sort: 'date' | reverse %}
-{% assign latest_album = albums | first %}
+{% assign all_tracks = site.albums | sort: 'date' | reverse %}
+{% assign newest_track = all_tracks | first %}
+{% assign latest_album_name = newest_track.album %}
+
+{% assign latest_album_tracks = site.albums | where: "album", latest_album_name | sort: "track" %}
+{% assign featured_track = latest_album_tracks | first %}
+{% assign latest_album = featured_track %}
 {% if latest_album.album %}
 {% assign latest_album_slug = latest_album.album | slugify %}
 {% assign latest_album_url = "/albums/" | append: latest_album_slug | append: "/" %}
@@ -48,7 +53,7 @@ title: Home
           <div class="album-link-section mobile-only">
             <span class="album-link-label">From the album</span>
             <a class="album-link" href="{{ latest_album_url | relative_url }}">
-              {{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}
+              {{ latest_album.album }}
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M7 17L17 7M17 7H7M17 7v10"/>
               </svg>
@@ -79,7 +84,7 @@ title: Home
           <div class="album-link-section desktop-only">
             <span class="album-link-label">From the album</span>
             <a class="album-link" href="{{ latest_album_url | relative_url }}">
-              {{ latest_album.album }}{% if latest_album.track %} — Track {{ latest_album.track }}{% endif %}
+              {{ latest_album.album }}
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M7 17L17 7M17 7H7M17 7v10"/>
               </svg>
@@ -95,46 +100,45 @@ title: Home
   <div class="container">
     <div class="section-label">Gallery</div>
     <div class="album-grid">
-      {% for album in albums %}
-        {% unless album.url == latest_album.url %}
-          <div class="grid-item">
-            <div class="grid-video-container">
-              <video 
-                src="{{ album.video_url | relative_url }}" 
-                {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
-                class="video-lightbox-trigger"
-                controls
-                loop 
-                playsinline></video>
-              <div class="expand-overlay" title="Click to expand">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="grid-info">
-              <a href="{{ album.url | relative_url }}" class="grid-title-link">
-                <h3 class="grid-title">{{ album.title }}</h3>
-              </a>
-              <div class="grid-meta">
-                <span>{{ album.date | date: "%B %d, %Y" }}</span>
-                {% if album.album %}
-                  <span class="dot-separator"></span>
-                  <span>{{ album.album }}{% if album.track %} #{{ album.track }}{% endif %}</span>
-                {% endif %}
-                {% if album.length %}
-                  <span class="dot-separator"></span>
-                  <span>{{ album.length }}</span>
-                {% endif %}
-              </div>
-              {% if album.description %}
-                <div class="grid-description">
-                  {{ album.description | markdownify }}
-                </div>
-              {% endif %}
+      {% assign gallery_tracks = all_tracks | where_exp: "item", "item.url != featured_track.url" | limit: 20 %}
+      {% for album in gallery_tracks %}
+        <div class="grid-item">
+          <div class="grid-video-container">
+            <video 
+              src="{{ album.video_url | relative_url }}" 
+              {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
+              class="video-lightbox-trigger"
+              controls
+              loop 
+              playsinline></video>
+            <div class="expand-overlay" title="Click to expand">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path>
+              </svg>
             </div>
           </div>
-        {% endunless %}
+          <div class="grid-info">
+            <a href="{{ album.url | relative_url }}" class="grid-title-link">
+              <h3 class="grid-title">{{ album.title }}</h3>
+            </a>
+            <div class="grid-meta">
+              <span>{{ album.date | date: "%B %d, %Y" }}</span>
+              {% if album.album %}
+                <span class="dot-separator"></span>
+                <span>{{ album.album }}</span>
+              {% endif %}
+              {% if album.length %}
+                <span class="dot-separator"></span>
+                <span>{{ album.length }}</span>
+              {% endif %}
+            </div>
+            {% if album.description %}
+              <div class="grid-description">
+                {{ album.description | markdownify }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
       {% endfor %}
     </div>
   </div>

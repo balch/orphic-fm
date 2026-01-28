@@ -2,7 +2,7 @@
 layout: default
 ---
 
-{% assign album_tracks = site.albums | where: "album", page.album | sort: "date" | reverse %}
+{% assign album_tracks = site.albums | where: "album", page.album | sort: "track" %}
 <div class="album-background-container">
   {% if page.poster_url %}
     <img src="{{ page.poster_url | relative_url }}" class="album-background-image" alt="">
@@ -61,13 +61,14 @@ layout: default
           {% for track in album_tracks %}
             <li>
               <div class="track-main">
-                <a href="{{ track.url | relative_url }}">{{ track.title }}</a>
+                <a href="{{ track.url | relative_url }}">
+                  {{ track.title }}
+                </a>
                 {% if track.description %}
                   {{ track.description | markdownify }}
                 {% endif %}
               </div>
               <div class="track-meta">
-                <span>{{ track.date | date: "%b %-d, %Y" }}</span>
                 {% if track.length %}
                   <span class="separator">&bull;</span>
                   <span>{{ track.length }}</span>
@@ -312,6 +313,11 @@ layout: default
   }
   .track-main a:hover {
     text-decoration: underline;
+  }
+  .track-num {
+    opacity: 0.3;
+    margin-right: 0.5rem;
+    font-variant-numeric: tabular-nums;
   }
   .track-main p {
     margin: 0.5rem 0 0;

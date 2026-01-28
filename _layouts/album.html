@@ -2,7 +2,7 @@
 layout: default
 ---
 
-{% assign album_tracks = site.albums | where: "album", page.album | sort: "date" | reverse %}
+{% assign album_tracks = site.albums | where: "album", page.album | sort: "track" %}
 {% assign album_slug = page.album | slugify %}
 {% assign album_url = "/albums/" | append: album_slug | append: "/" %}
 {% assign current_index = nil %}
@@ -122,8 +122,9 @@ layout: default
           {% for track in album_tracks %}
             <li class="{% if track.url == page.url %}is-current{% endif %}">
               <a href="{{ track.url | relative_url }}" class="track-link">
-                <span class="track-title">{{ track.title }}</span>
-                <span class="track-meta">{{ track.date | date: "%b %-d, %Y" }}</span>
+                <span class="track-title">
+                  {{ track.title }}
+                </span>
               </a>
             </li>
           {% endfor %}
@@ -446,6 +447,11 @@ layout: default
   }
   .track-title {
     font-weight: 500;
+  }
+  .track-num {
+    opacity: 0.3;
+    margin-right: 0.5rem;
+    font-variant-numeric: tabular-nums;
   }
   .album-tracklist a:hover .track-title {
     text-decoration: underline;
