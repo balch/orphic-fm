@@ -7,5 +7,5 @@ album: "Bootstrap"
 track: 1
 video_url: "/assets/albums/2026-01-11-Bootstrap/Encapsulation.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
-tags: ["manual", "drums", "drone", "lfo", "resonator"]
+tags: ["human", "drums", "drone", "lfo", "resonator"]
 ---

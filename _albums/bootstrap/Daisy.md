@@ -7,5 +7,5 @@ album: "Bootstrap"
 track: 2
 video_url: "/assets/albums/2026-01-11-Bootstrap/Daisy.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
-tags: ["manual", "drums", "drone"]
+tags: ["human", "drums", "drone"]
 ---
