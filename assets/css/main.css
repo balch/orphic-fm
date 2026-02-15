@@ -300,6 +300,39 @@ nav {
     margin-top: 0.1rem;
 }
 
+/* Album-grouped nav dropdown */
+.nav-album-group {
+    padding: 0 !important;
+}
+
+.nav-album-header {
+    display: block;
+    padding: 0.6rem 1.25rem 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent-primary, #8b5cf6) !important;
+    opacity: 0.8;
+}
+
+.nav-album-group:not(:first-child) .nav-album-header {
+    border-top: 1px solid var(--border-color);
+    margin-top: 0.25rem;
+    padding-top: 0.75rem;
+}
+
+.nav-album-tracks {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-album-tracks li a {
+    padding: 0.5rem 1.25rem 0.5rem 1.75rem;
+    font-size: 0.85rem;
+}
+
 /* Fix for last nav item going off-screen (right align) */
 .nav-links>li:last-child .nav-dropdown {
     left: auto;
@@ -2281,6 +2314,21 @@ html {
 
     .nav-post-title {
         white-space: normal;
+    }
+
+    .nav-album-header {
+        padding: 0.5rem 1rem 0.2rem 1rem;
+        margin-left: 1rem;
+    }
+
+    .nav-album-tracks li a {
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        border-left: 2px solid var(--accent-primary);
+        margin-left: 1rem;
+    }
+
+    .nav-album-group:not(:first-child) .nav-album-header {
+        border-top: none;
     }
 
     .portfolio-grid {

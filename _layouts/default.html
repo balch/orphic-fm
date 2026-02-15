@@ -123,9 +123,26 @@
               {% endfor %}
               {% elsif item.children == 'albums' %}
               {% assign nav_albums = site.albums | sort: "date" | reverse %}
+              {% assign nav_album_names = "" %}
               {% for track in nav_albums %}
-              <li><a href="{{ track.url | relative_url }}"><span class="nav-post-title">{{ track.title }}</span><span
-                    class="nav-post-date">{{ track.date | date: "%b %-d, %Y" }}</span></a></li>
+                {% assign track_album = track.album %}
+                {% unless nav_album_names contains track_album %}
+                  {% if nav_album_names != "" %}{% assign nav_album_names = nav_album_names | append: "|" %}{% endif %}
+                  {% assign nav_album_names = nav_album_names | append: track_album %}
+                {% endunless %}
+              {% endfor %}
+              {% assign nav_album_list = nav_album_names | split: "|" %}
+              {% for album_name in nav_album_list %}
+                {% assign album_slug = album_name | slugify %}
+                <li class="nav-album-group">
+                  <a href="{{ '/albums/' | append: album_slug | append: '/' | relative_url }}" class="nav-album-header">{{ album_name }}</a>
+                  <ul class="nav-album-tracks">
+                    {% assign album_group_tracks = site.albums | where: "album", album_name | sort: "track" %}
+                    {% for track in album_group_tracks %}
+                    <li><a href="{{ track.url | relative_url }}"><span class="nav-post-title">{{ track.title }}</span></a></li>
+                    {% endfor %}
+                  </ul>
+                </li>
               {% endfor %}
               {% elsif item.children %}
               {% for child in item.children %}

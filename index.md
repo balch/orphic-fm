@@ -96,6 +96,46 @@ title: Home
   </div>
 </section>
 
+{% assign album_names = "" %}
+{% for t in all_tracks %}
+  {% unless album_names contains t.album %}
+    {% if album_names != "" %}{% assign album_names = album_names | append: "|" %}{% endif %}
+    {% assign album_names = album_names | append: t.album %}
+  {% endunless %}
+{% endfor %}
+{% assign album_list = album_names | split: "|" %}
+
+{% if album_list.size > 0 %}
+<section class="albums-section">
+  <div class="container">
+    <div class="section-label">Albums</div>
+    <div class="albums-grid">
+      {% for album_name in album_list %}
+        {% assign album_slug = album_name | slugify %}
+        {% assign album_url = "/albums/" | append: album_slug | append: "/" %}
+        {% assign album_tracks_list = site.albums | where: "album", album_name | sort: "track" %}
+        {% assign first_track = album_tracks_list | first %}
+        {% assign album_page = site.pages | where: "album", album_name | first %}
+        <a href="{{ album_url | relative_url }}" class="album-card">
+          <div class="album-card-art">
+            {% if first_track.poster_url %}
+              <img src="{{ first_track.poster_url | relative_url }}" alt="{{ album_name }}" loading="lazy">
+            {% endif %}
+          </div>
+          <div class="album-card-info">
+            <h3 class="album-card-title">{{ album_name }}</h3>
+            {% if album_page.description %}
+              <p class="album-card-desc">{{ album_page.description | strip_html | truncate: 100 }}</p>
+            {% endif %}
+            <span class="album-card-meta">{{ album_tracks_list.size }} tracks</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <section class="gallery-section">
   <div class="container">
     <div class="section-label">Gallery</div>
@@ -378,6 +418,86 @@ title: Home
     background: rgba(255,255,255,0.05);
   }
 
+  .albums-section {
+    padding: 6rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .album-card {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .album-card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .album-card-art {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #111;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .album-card-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .album-card-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .album-card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .album-card-desc {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.6;
+    margin: 0 0 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .album-card-meta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.35;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
   .gallery-section {
     padding: 6rem 0 12rem;
     border-top: 1px solid rgba(255,255,255,0.05);
@@ -511,6 +631,20 @@ title: Home
   @media (max-width: 768px) {
     .mobile-only { display: block; }
     .desktop-only { display: none; }
+    .albums-grid {
+      grid-template-columns: 1fr;
+    }
+    .album-card-art {
+      width: 80px;
+      height: 80px;
+    }
+    .album-card {
+      padding: 1rem;
+      gap: 1rem;
+    }
+    .album-card-title {
+      font-size: 1.1rem;
+    }
     .album-grid {
       grid-template-columns: 1fr;
     }
