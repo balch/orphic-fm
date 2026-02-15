@@ -58,10 +58,28 @@ layout: default
     </header>
 
     {% if album_tracks.size > 0 %}
+      <div class="album-player-area">
+        <div class="album-player-container" id="albumPlayer" style="display: none;">
+          <video id="albumVideo" controls playsinline></video>
+          <div class="album-player-info" id="albumPlayerInfo"></div>
+        </div>
+        <button class="album-play-btn" id="albumPlayBtn" aria-label="Play album">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Play</span>
+        </button>
+      </div>
+
       <section class="album-tracklist">
         <ol>
           {% for track in album_tracks %}
-            <li>
+            <li data-video-url="{{ track.video_url | relative_url }}" data-track-title="{{ track.title }}" data-track-url="{{ track.url | relative_url }}">
+              <div class="track-play-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+              </div>
               <div class="track-main">
                 <a href="{{ track.url | relative_url }}">
                   {{ track.title }}
@@ -83,9 +101,6 @@ layout: default
     {% endif %}
 
     <footer class="album-footer">
-      {% if album_tracks.first %}
-        <a class="nav-link" href="{{ album_tracks.first.url | relative_url }}">Play from the top</a>
-      {% endif %}
       <a href="{{ '/' | relative_url }}" class="back-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -188,6 +203,59 @@ layout: default
     document.addEventListener('click', () => {
       closeAllDropdowns();
     });
+  });
+
+  // Album inline player
+  document.addEventListener('DOMContentLoaded', function() {
+    const playBtn = document.getElementById('albumPlayBtn');
+    const playerContainer = document.getElementById('albumPlayer');
+    const video = document.getElementById('albumVideo');
+    const playerInfo = document.getElementById('albumPlayerInfo');
+    const trackItems = document.querySelectorAll('.album-tracklist li[data-video-url]');
+    let currentTrackIndex = -1;
+
+    function playTrack(index) {
+      if (index < 0 || index >= trackItems.length) return;
+      const item = trackItems[index];
+      const videoUrl = item.dataset.videoUrl;
+      const title = item.dataset.trackTitle;
+
+      currentTrackIndex = index;
+      video.src = videoUrl;
+      video.play();
+      playerContainer.style.display = 'block';
+      playerInfo.textContent = title;
+      playBtn.style.display = 'none';
+
+      trackItems.forEach(t => t.classList.remove('is-playing'));
+      item.classList.add('is-playing');
+
+      playerContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (playBtn) {
+      playBtn.addEventListener('click', () => playTrack(0));
+    }
+
+    trackItems.forEach((item, index) => {
+      const playIcon = item.querySelector('.track-play-icon');
+      if (playIcon) {
+        playIcon.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          playTrack(index);
+        });
+      }
+    });
+
+    if (video) {
+      video.addEventListener('ended', () => {
+        const nextIndex = currentTrackIndex + 1;
+        if (nextIndex < trackItems.length) {
+          playTrack(nextIndex);
+        }
+      });
+    }
   });
 </script>
 
@@ -296,6 +364,51 @@ layout: default
     margin: 0 0.75rem;
     opacity: 0.3;
   }
+  .album-player-area {
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  .album-play-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.5rem;
+    border-radius: 100px;
+    border: none;
+    background: var(--accent-primary, #8b5cf6);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+  }
+  .album-play-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+    background: #7c3aed;
+  }
+  .album-player-container {
+    max-width: 680px;
+    margin: 0 auto 1rem;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .album-player-container video {
+    width: 100%;
+    aspect-ratio: 16/9;
+    display: block;
+  }
+  .album-player-info {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.8;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+  }
   .album-tracklist ol {
     list-style: none;
     padding: 0;
@@ -310,8 +423,40 @@ layout: default
     backdrop-filter: blur(10px);
     padding: 1.25rem 1.5rem;
     display: flex;
-    justify-content: space-between;
-    gap: 2rem;
+    align-items: center;
+    gap: 1rem;
+  }
+  .track-play-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    opacity: 0.3;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .track-play-icon svg {
+    margin-left: 2px;
+  }
+  .album-tracklist li:hover .track-play-icon {
+    opacity: 0.8;
+    background: rgba(139, 92, 246, 0.15);
+  }
+  .album-tracklist li.is-playing .track-play-icon {
+    opacity: 1;
+    background: var(--accent-primary, #8b5cf6);
+    color: white;
+  }
+  .album-tracklist li.is-playing {
+    border-color: rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.08);
+  }
+  .track-main {
+    flex: 1;
+    min-width: 0;
   }
   .track-main a {
     color: inherit;
@@ -385,10 +530,8 @@ layout: default
     .share-btn { padding: 0.25rem; }
     .album-meta { display: none; }
     .album-tracklist li {
-      flex-direction: column;
-      align-items: flex-start;
       padding: 1rem;
-      gap: 0.5rem;
+      gap: 0.75rem;
     }
     .track-main a { font-size: 1.05rem; }
     .track-main p { font-size: 0.9rem; }
