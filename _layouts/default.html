@@ -541,6 +541,225 @@
     });
   </script>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Shadow Audio Element: hidden <audio> that continues playing when tab is backgrounded
+      const shadowAudio = document.createElement('audio');
+      shadowAudio.style.display = 'none';
+      document.body.appendChild(shadowAudio);
+
+      let activeVideo = null;
+      let isBackgrounded = false;
+
+      // Listen for play events on all videos via event delegation (capture phase)
+      // Ignore the lightbox video since it mirrors a source video
+      document.addEventListener('play', (e) => {
+        if (e.target.tagName !== 'VIDEO') return;
+        if (e.target.classList.contains('lightbox-video')) return;
+        activeVideo = e.target;
+        if (shadowAudio.src !== activeVideo.src) {
+          shadowAudio.src = activeVideo.src;
+        }
+        updateMediaSession(activeVideo);
+        // If a new track started while tab is hidden (auto-advance), hand off to shadow audio
+        if (document.hidden) {
+          setTimeout(() => {
+            if (document.hidden && activeVideo && !activeVideo.paused) {
+              shadowAudio.currentTime = activeVideo.currentTime;
+              shadowAudio.volume = activeVideo.muted ? 0 : activeVideo.volume;
+              shadowAudio.play().catch(() => {});
+              activeVideo.pause();
+              isBackgrounded = true;
+            }
+          }, 100);
+        }
+      }, true);
+
+      // Visibility Change Handler: swap between video and shadow audio on tab hide/show
+      document.addEventListener('visibilitychange', () => {
+        if (!activeVideo) return;
+
+        if (document.hidden) {
+          if (activeVideo.paused) return;
+          shadowAudio.currentTime = activeVideo.currentTime;
+          shadowAudio.volume = activeVideo.muted ? 0 : activeVideo.volume;
+          shadowAudio.play().catch(() => {});
+          activeVideo.pause();
+          isBackgrounded = true;
+        } else if (isBackgrounded) {
+          activeVideo.currentTime = shadowAudio.currentTime;
+          activeVideo.play().catch(() => {});
+          shadowAudio.pause();
+          isBackgrounded = false;
+        }
+      });
+
+      // Auto-Advance: when shadow audio ends while backgrounded, dispatch ended on the video
+      // so existing auto-advance logic in album-collection.html and album.html kicks in
+      shadowAudio.addEventListener('ended', () => {
+        if (!activeVideo) return;
+        activeVideo.currentTime = activeVideo.duration || 0;
+        activeVideo.dispatchEvent(new Event('ended'));
+        isBackgrounded = false;
+      });
+
+      // --- Media Session: Lock Screen Metadata ---
+
+      function getTrackMetadata(video) {
+        // 1. Album collection page
+        const playingLi = document.querySelector('.album-tracklist li.is-playing');
+        if (playingLi) {
+          const title = playingLi.getAttribute('data-track-title') || 'Unknown Track';
+          const albumEl = document.querySelector('.album-title');
+          const album = albumEl ? albumEl.textContent.trim() : 'Unknown Album';
+          const artEl = document.querySelector('.album-art-icon');
+          const artwork = artEl ? artEl.src : (video ? video.poster : '');
+          return { title, album, artwork };
+        }
+
+        // 2. Single track page
+        const detailTitle = document.querySelector('.album-detail .album-title');
+        if (detailTitle) {
+          const title = detailTitle.textContent.trim();
+          const albumLinkEl = document.querySelector('.album-link');
+          const album = albumLinkEl ? albumLinkEl.textContent.trim() : '';
+          const artwork = video ? video.poster : '';
+          return { title, album, artwork };
+        }
+
+        // 3. Fallback
+        const title = document.title || 'Orphic FM';
+        const artwork = video ? video.poster : '';
+        return { title, album: '', artwork };
+      }
+
+      function updateMediaSession(video) {
+        if (!('mediaSession' in navigator)) return;
+        const meta = getTrackMetadata(video);
+        const artworkArray = meta.artwork
+          ? [{ src: meta.artwork, sizes: '512x512' }]
+          : [];
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: meta.title,
+          artist: 'Orpheus',
+          album: meta.album,
+          artwork: artworkArray
+        });
+      }
+
+      // --- Media Session: Action Handlers ---
+
+      function setupMediaSessionActions() {
+        if (!('mediaSession' in navigator)) return;
+
+        navigator.mediaSession.setActionHandler('play', () => {
+          if (isBackgrounded) {
+            shadowAudio.play().catch(() => {});
+          } else if (activeVideo) {
+            activeVideo.play().catch(() => {});
+          }
+        });
+
+        navigator.mediaSession.setActionHandler('pause', () => {
+          if (isBackgrounded) {
+            shadowAudio.pause();
+          } else if (activeVideo) {
+            activeVideo.pause();
+          }
+        });
+
+        navigator.mediaSession.setActionHandler('seekbackward', () => {
+          const target = isBackgrounded ? shadowAudio : activeVideo;
+          if (target) target.currentTime = Math.max(0, target.currentTime - 10);
+        });
+
+        navigator.mediaSession.setActionHandler('seekforward', () => {
+          const target = isBackgrounded ? shadowAudio : activeVideo;
+          if (target) target.currentTime = Math.min(target.duration || Infinity, target.currentTime + 10);
+        });
+
+        navigator.mediaSession.setActionHandler('seekto', (details) => {
+          const target = isBackgrounded ? shadowAudio : activeVideo;
+          if (target && details.seekTime != null) {
+            target.currentTime = details.seekTime;
+          }
+        });
+
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+          // Album collection page
+          const playingLi = document.querySelector('.album-tracklist li.is-playing');
+          if (playingLi) {
+            const prevLi = playingLi.previousElementSibling;
+            if (prevLi) {
+              const btn = prevLi.querySelector('.track-play-icon');
+              if (btn) btn.click();
+            }
+            return;
+          }
+          // Single track page
+          const navLinks = document.querySelectorAll('a.nav-link');
+          for (const link of navLinks) {
+            if (link.textContent.includes('\u2190')) {
+              link.click();
+              return;
+            }
+          }
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          // Album collection page
+          const playingLi = document.querySelector('.album-tracklist li.is-playing');
+          if (playingLi) {
+            const nextLi = playingLi.nextElementSibling;
+            if (nextLi) {
+              const btn = nextLi.querySelector('.track-play-icon');
+              if (btn) btn.click();
+            }
+            return;
+          }
+          // Single track page
+          const navLinks = document.querySelectorAll('a.nav-link');
+          for (const link of navLinks) {
+            if (link.textContent.includes('\u2192')) {
+              link.click();
+              return;
+            }
+          }
+        });
+      }
+
+      // --- Playback State Reporting ---
+
+      // Update playback state on play/pause via event delegation
+      // Handle both video and shadow audio, but ignore video pause during backgrounding
+      document.addEventListener('play', (e) => {
+        if (e.target.tagName !== 'VIDEO' && e.target !== shadowAudio) return;
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'playing';
+        }
+      }, true);
+
+      document.addEventListener('pause', (e) => {
+        if (e.target.tagName !== 'VIDEO' && e.target !== shadowAudio) return;
+        // Don't report 'paused' when we pause the video during background handoff
+        if (e.target.tagName === 'VIDEO' && isBackgrounded) return;
+        if ('mediaSession' in navigator) {
+          navigator.mediaSession.playbackState = 'paused';
+        }
+      }, true);
+
+      // Clear isBackgrounded if user pauses via lock screen (before track ends)
+      shadowAudio.addEventListener('pause', () => {
+        if (isBackgrounded && shadowAudio.currentTime < (shadowAudio.duration || Infinity) - 0.5) {
+          isBackgrounded = false;
+        }
+      });
+
+      // Initialize media session action handlers
+      setupMediaSessionActions();
+    });
+  </script>
+
 </body>
 
 </html>
