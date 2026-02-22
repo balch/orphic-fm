@@ -29,13 +29,13 @@ title: Home
     <div class="album-container">
       <div class="video-side">
         <div class="video-card large">
-          <div class="video-container">
-            <video 
-              src="{{ latest_album.video_url | relative_url }}" 
+          <div class="video-container" style="aspect-ratio: {{ latest_album.aspect_ratio | default: '16/9' }};">
+            <video
+              src="{{ latest_album.video_url | relative_url }}"
               {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
-              playsinline 
-              loop 
-              muted 
+              playsinline
+              loop
+              muted
               autoplay
               controls></video>
           </div>
@@ -143,13 +143,13 @@ title: Home
       {% assign gallery_tracks = all_tracks | where_exp: "item", "item.url != featured_track.url" | limit: 20 %}
       {% for album in gallery_tracks %}
         <div class="grid-item">
-          <div class="grid-video-container">
-            <video 
-              src="{{ album.video_url | relative_url }}" 
+          <div class="grid-video-container" style="aspect-ratio: {{ album.aspect_ratio | default: '16/9' }};">
+            <video
+              src="{{ album.video_url | relative_url }}"
               {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
               class="video-lightbox-trigger"
               controls
-              loop 
+              loop
               playsinline></video>
             <div class="expand-overlay" title="Click to expand">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -275,14 +275,14 @@ title: Home
     position: relative;
     border-radius: 40px;
     overflow: hidden;
-    aspect-ratio: 16/9;
+    /* aspect-ratio set via inline style from front-matter */
     background: #000;
   }
-  
+
   .video-container video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
     cursor: pointer;
   }
@@ -518,6 +518,7 @@ title: Home
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
+    align-items: start;
   }
 
   .grid-item {
@@ -527,7 +528,7 @@ title: Home
   }
 
   .grid-video-container {
-    aspect-ratio: 16/9;
+    /* aspect-ratio set via inline style from front-matter */
     border-radius: 16px;
     overflow: hidden;
     background: #000;
@@ -543,7 +544,7 @@ title: Home
   .grid-video-container video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
   }
 
@@ -651,8 +652,9 @@ title: Home
     .gallery-section {
       padding: 4rem 0 8rem;
     }
-    .video-container { border-radius: 20px; }
+    .video-container { border-radius: 20px; max-height: 70vh; }
     .video-card { border-radius: 20px; }
+    .grid-video-container { max-height: 70vh; }
     :root {
       --hero-font-size: clamp(2.8rem, 12vw, 5rem);
     }

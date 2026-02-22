@@ -74,7 +74,7 @@ layout: default
       <section class="album-tracklist">
         <ol>
           {% for track in album_tracks %}
-            <li data-video-url="{{ track.video_url | relative_url }}" data-track-title="{{ track.title }}" data-track-url="{{ track.url | relative_url }}">
+            <li data-video-url="{{ track.video_url | relative_url }}" data-track-title="{{ track.title }}" data-track-url="{{ track.url | relative_url }}" data-aspect-ratio="{{ track.aspect_ratio | default: '16/9' }}">
               <div class="track-play-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                   <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -219,9 +219,11 @@ layout: default
       const item = trackItems[index];
       const videoUrl = item.dataset.videoUrl;
       const title = item.dataset.trackTitle;
+      const aspectRatio = item.dataset.aspectRatio || '16/9';
 
       currentTrackIndex = index;
       video.src = videoUrl;
+      video.style.aspectRatio = aspectRatio;
       video.play();
       playerContainer.style.display = 'block';
       playerInfo.textContent = title;
@@ -398,7 +400,8 @@ layout: default
   }
   .album-player-container video {
     width: 100%;
-    aspect-ratio: 16/9;
+    aspect-ratio: 16/9; /* default, overridden by JS per track */
+    object-fit: contain;
     display: block;
   }
   .album-player-info {
