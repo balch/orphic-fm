@@ -125,7 +125,7 @@ title: Home
           <div class="album-card-info">
             <h3 class="album-card-title">{{ album_name }}</h3>
             {% if album_page.description %}
-              <p class="album-card-desc">{{ album_page.description | strip_html | truncate: 100 }}</p>
+              <p class="album-card-desc">{{ album_page.description | markdownify | strip_html | truncate: 100 }}</p>
             {% endif %}
             <span class="album-card-meta">{{ album_tracks_list.size }} tracks</span>
           </div>
