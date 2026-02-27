@@ -7,7 +7,13 @@
   <meta name="author" content="Orpheus">
   
   {% assign albums = site.albums | sort: 'date' | reverse %}
-  {% assign latest_album = albums | first %}
+  {% assign newest_album_track = albums | first %}
+  {% assign newest_album_name = newest_album_track.album %}
+  {% assign newest_album_tracks = site.albums | where: "album", newest_album_name | sort: "track" %}
+  {% assign latest_album = newest_album_tracks | where: "featuredSong", true | first %}
+  {% unless latest_album %}
+    {% assign latest_album = newest_album_tracks | first %}
+  {% endunless %}
 
   {% if page.layout == 'home' %}
     {% assign page_title = site.title | append: " — " | append: site.description %}

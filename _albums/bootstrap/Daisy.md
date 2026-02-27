@@ -5,6 +5,7 @@ description: "First track recorded on the Orphic-FM Synth. This manual compositi
 date: 2026-01-11
 album: "Bootstrap"
 track: 2
+featuredSong: true
 video_url: "/assets/albums/2026-01-11-Bootstrap/Daisy.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["human", "drums", "drone"]
