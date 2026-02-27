@@ -15,7 +15,10 @@ title: Home
 {% assign latest_album_name = newest_track.album %}
 
 {% assign latest_album_tracks = site.albums | where: "album", latest_album_name | sort: "track" %}
-{% assign featured_track = latest_album_tracks | first %}
+{% assign featured_track = latest_album_tracks | where: "featuredSong", true | first %}
+{% unless featured_track %}
+  {% assign featured_track = latest_album_tracks | first %}
+{% endunless %}
 {% assign latest_album = featured_track %}
 {% if latest_album.album %}
 {% assign latest_album_slug = latest_album.album | slugify %}
