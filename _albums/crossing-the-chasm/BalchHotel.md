@@ -2,7 +2,7 @@
 layout: album
 title: "The Balch Hotel"
 description: "This was written in Dufur, OR at the fabulous Balch Hotel with Mt. Hood in the background."
-date: 2026-02-26
+date: 2026-02-28
 album: "Crossing the Chasm"
 track: 5
 featuredSong: true
