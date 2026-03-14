@@ -7,6 +7,5 @@ vendor/
 node_modules/
 .DS_Store
 .superpowers/
-synth/
 .playwright-mcp/
 *.mp4
