@@ -1,0 +1,491 @@
+---
+layout: default
+---
+
+{% assign all_tracks = site.albums | sort: 'date' | reverse %}
+{% assign albums_seen = "" %}
+
+<article class="devlog-page">
+
+  {% for track in all_tracks %}
+    {% if track.tech_blurb %}
+      {% assign track_album = track.album %}
+      {% unless albums_seen contains track_album %}
+        {% if albums_seen != "" %}{% assign albums_seen = albums_seen | append: "|" %}{% endif %}
+        {% assign albums_seen = albums_seen | append: track_album %}
+        {% assign album_slug = track_album | slugify %}
+        {% assign album_page = site.pages | where: "album", track_album | first %}
+
+        <!-- ═══ Album Header: text over poster art ═══ -->
+        <div class="devlog-album-hero" id="{{ album_slug }}">
+          <div class="devlog-album-hero-bg">
+            {% if album_page.poster_url %}
+              <img src="{{ album_page.poster_url | relative_url }}" alt="" loading="lazy">
+            {% endif %}
+          </div>
+          <div class="devlog-album-hero-scrim"></div>
+          <div class="devlog-album-hero-content">
+            {% assign album_tracks_for_date = site.albums | where: "album", track_album | sort: "track" %}
+            <div class="devlog-album-date">
+              {{ album_tracks_for_date.first.date | date: "%B %Y" }}
+            </div>
+            <h2 class="devlog-album-name">
+              <a href="{{ '/albums/' | append: album_slug | append: '/' | relative_url }}">{{ track_album }}</a>
+            </h2>
+            {% if album_page.tech_description %}
+              <div class="devlog-album-tech">{{ album_page.tech_description | markdownify }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endunless %}
+
+      <!-- ═══ Song Entry ═══ -->
+      {% assign track_slug = track.title | slugify %}
+      {% assign current_album_page = site.pages | where: "album", track.album | first %}
+      {% assign has_unique_art = false %}
+      {% if track.poster_url and current_album_page and track.poster_url != current_album_page.poster_url %}
+        {% assign has_unique_art = true %}
+      {% endif %}
+      <section class="devlog-song {% if has_unique_art %}unique-art{% endif %}" id="{{ track_slug }}">
+
+        <!-- 1. Background: song poster -->
+        {% if track.poster_url %}
+          <div class="devlog-song-bg">
+            <img src="{{ track.poster_url | relative_url }}" alt="" loading="lazy">
+          </div>
+          <div class="devlog-song-bg-scrim"></div>
+        {% endif %}
+
+        <!-- Inner: text left + sticky video right -->
+        <div class="devlog-song-inner">
+          <!-- Text column -->
+          <div class="devlog-song-text">
+            <div class="devlog-song-meta">
+              <time>{{ track.date | date: "%B %d, %Y" }}</time>
+              <span class="devlog-sep">&bull;</span>
+              <span>Track {{ track.track }}</span>
+            </div>
+
+            <h2 class="devlog-song-title">
+              <a href="{{ track.url | relative_url }}">{{ track.title }}</a>
+            </h2>
+
+            {% if track.description %}
+              <p class="devlog-song-desc">{{ track.description | markdownify | strip_html }}</p>
+            {% endif %}
+
+            <div class="devlog-song-body">
+              {% if track.tech_content %}
+                {{ track.tech_content | markdownify }}
+              {% else %}
+                {{ track.tech_blurb | markdownify }}
+              {% endif %}
+            </div>
+
+            {% if track.tech_url %}
+              <a href="{{ track.tech_url }}" class="devlog-commit-link" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
+                View commit
+              </a>
+            {% endif %}
+
+            {% if track.tags %}
+              <div class="devlog-song-tags">
+                {% for tag in track.tags %}
+                  <span class="devlog-tag">#{{ tag }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- Sticky video column (always right) -->
+          <div class="devlog-song-media">
+            <div class="devlog-song-video">
+              <video
+                src="{{ track.video_url | relative_url }}"
+                {% if track.poster_url %}poster="{{ track.poster_url | relative_url }}"{% endif %}
+                controls
+                playsinline
+                loop
+                muted
+                style="aspect-ratio: {{ track.aspect_ratio | default: '16/9' }};"
+              ></video>
+            </div>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+
+  <footer class="devlog-footer">
+    <div class="devlog-footer-inner">
+      <a href="{{ '/' | relative_url }}" class="back-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back to Gallery
+      </a>
+    </div>
+  </footer>
+</article>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const songs = document.querySelectorAll('.devlog-song');
+  let mutedState = true; // default muted, remembered between songs
+
+  // IntersectionObserver: auto-play when entry scrolls into view, stop when it leaves
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const video = entry.target.querySelector('.devlog-song-video video');
+      if (!video) return;
+
+      if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+        video.muted = mutedState;
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: [0, 0.4, 1] });
+
+  songs.forEach(song => observer.observe(song));
+
+  // Remember mute state across songs
+  document.querySelectorAll('.devlog-song-video video').forEach(video => {
+    video.addEventListener('volumechange', () => {
+      mutedState = video.muted;
+    });
+  });
+});
+</script>
+
+<style>
+  .devlog-page {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ══════════════════════════════════════════
+     Album Header — text over poster art
+     ══════════════════════════════════════════ */
+  .devlog-album-hero {
+    position: relative;
+    min-height: 340px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .devlog-album-hero + .devlog-song + .devlog-album-hero,
+  .devlog-song + .devlog-album-hero {
+    margin-top: 5rem;
+  }
+  .devlog-album-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .devlog-album-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+  .devlog-album-hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to top,
+      rgba(13, 13, 13, 0.95) 0%,
+      rgba(13, 13, 13, 0.8) 35%,
+      rgba(13, 13, 13, 0.4) 65%,
+      rgba(13, 13, 13, 0.2) 100%
+    );
+  }
+  .devlog-album-date {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.4;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .devlog-album-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    width: 100%;
+  }
+  .devlog-album-name {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.04em;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+  .devlog-album-name a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .devlog-album-name a:hover {
+    color: var(--accent-primary, #8b5cf6);
+  }
+  .devlog-album-tech {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    opacity: 0.7;
+    max-width: 650px;
+  }
+  .devlog-album-tech p {
+    margin: 0;
+  }
+
+  /* ══════════════════════════════════════════
+     Song Entry
+     ══════════════════════════════════════════ */
+  .devlog-song {
+    position: relative;
+    overflow: hidden;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    margin-top: 1rem;
+  }
+
+  /* 1. Song poster background */
+  .devlog-song-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  /* Default (shared album art): blurred and subtle */
+  .devlog-song-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: blur(30px) brightness(0.3) saturate(1.4);
+    transform: scale(1.1);
+  }
+  /* Unique song art: clear, prominent, properly scaled */
+  .devlog-song.unique-art .devlog-song-bg img {
+    filter: brightness(0.55) saturate(1.15);
+    transform: none;
+    object-fit: cover;
+    object-position: center;
+  }
+  /* Scrim: default for shared art — even, subtle */
+  .devlog-song-bg-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(13, 13, 13, 0.4);
+  }
+  /* Scrim: unique art — heavier on text side so art shows through on right */
+  .devlog-song.unique-art .devlog-song-bg-scrim {
+    background: linear-gradient(
+      to right,
+      rgba(13, 13, 13, 0.75) 0%,
+      rgba(13, 13, 13, 0.55) 35%,
+      rgba(13, 13, 13, 0.3) 65%,
+      rgba(13, 13, 13, 0.15) 100%
+    );
+  }
+
+  /* Inner: text left + video right */
+  .devlog-song-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    align-items: flex-start;
+  }
+
+  /* Text column */
+  .devlog-song-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Sticky video column — always right, vertically centered */
+  .devlog-song-media {
+    width: 420px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 50%;
+    transform: translateY(-50%);
+    align-self: flex-start;
+    /* Recalculate: use top + transform for vertical centering within viewport */
+    top: 100px;
+    transform: none;
+  }
+  .devlog-song-video {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+  }
+  .devlog-song-video video {
+    width: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* ── Text styles ── */
+  .devlog-song-meta {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    opacity: 0.4;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .devlog-sep {
+    margin: 0 0.5rem;
+    opacity: 0.3;
+  }
+  .devlog-song-title {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+  .devlog-song-title a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .devlog-song-title a:hover {
+    color: var(--accent-primary, #8b5cf6);
+  }
+  .devlog-song-desc {
+    font-size: 1.05rem;
+    font-style: italic;
+    opacity: 0.45;
+    line-height: 1.5;
+    margin: 0 0 1.25rem;
+  }
+  .devlog-song-body {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    opacity: 0.8;
+  }
+  .devlog-song-body p {
+    margin: 0 0 0.85rem;
+  }
+  .devlog-song-body p:last-child {
+    margin-bottom: 0;
+  }
+  .devlog-song-body strong {
+    color: #fff;
+  }
+  .devlog-song-body code {
+    font-size: 0.83em;
+    padding: 0.15em 0.45em;
+    border-radius: 5px;
+    background: rgba(139, 92, 246, 0.15);
+    color: rgba(255,255,255,0.95);
+  }
+
+  /* Commit link */
+  .devlog-commit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--accent-primary, #8b5cf6);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    font-weight: 500;
+  }
+  .devlog-commit-link:hover {
+    opacity: 1;
+  }
+
+  /* Tags */
+  .devlog-song-tags {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+  }
+  .devlog-tag {
+    font-size: 0.7rem;
+    opacity: 0.35;
+    padding: 0.25rem 0.65rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+  }
+  .devlog-tag:hover {
+    opacity: 0.7;
+    border-color: rgba(255,255,255,0.25);
+  }
+
+  /* Footer */
+  .devlog-footer {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 3rem 0;
+  }
+  .devlog-footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+  }
+
+  /* ══════════════════════════════════════════
+     Mobile — stack vertically
+     ══════════════════════════════════════════ */
+  @media (max-width: 900px) {
+    .devlog-album-hero {
+      min-height: 260px;
+    }
+    .devlog-album-hero-content {
+      padding: 2rem 1.25rem;
+    }
+    .devlog-song-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem 1.25rem;
+    }
+    .devlog-song-media {
+      width: 100%;
+      position: static;
+      transform: none;
+    }
+    .devlog-song-title {
+      font-size: 1.4rem;
+    }
+    .devlog-song-body {
+      font-size: 1rem;
+    }
+    .devlog-song-desc {
+      font-size: 0.95rem;
+    }
+    .devlog-song-video {
+      border-radius: 12px;
+    }
+  }
+
+  /* Large screens */
+  @media (min-width: 1200px) {
+    .devlog-song-media {
+      width: 480px;
+    }
+    .devlog-song-inner {
+      max-width: 1200px;
+    }
+  }
+</style>
