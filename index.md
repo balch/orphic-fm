@@ -25,75 +25,82 @@ title: Home
 {% assign latest_album_url = "/albums/" | append: latest_album_slug | append: "/" %}
 {% endif %}
 
+{% assign featured_album_page = site.pages | where: "album", latest_album.album | first %}
+{% assign featured_has_unique_art = false %}
+{% if latest_album.poster_url and featured_album_page and latest_album.poster_url != featured_album_page.poster_url %}
+  {% assign featured_has_unique_art = true %}
+{% endif %}
+
 {% if latest_album %}
-<section id="featured-album" class="featured-album-section">
-  <div class="container narrow">
-    <div class="section-label">Featured Track</div>
-    <div class="album-container">
-      <div class="video-side">
-        <div class="video-card large">
-          <div class="video-container" style="aspect-ratio: {{ latest_album.aspect_ratio | default: '16/9' }};">
-            <video
-              src="{{ latest_album.video_url | relative_url }}"
-              {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
-              playsinline
-              loop
-              muted
-              autoplay
-              controls></video>
-          </div>
-        </div>
+<section id="featured-album" class="featured-hero">
+  <!-- Background: song or album poster -->
+  <div class="featured-hero-bg">
+    {% if latest_album.poster_url %}
+      <img src="{{ latest_album.poster_url | relative_url }}" alt="" loading="lazy"
+        class="{% if featured_has_unique_art %}unique-bg{% endif %}">
+    {% endif %}
+  </div>
+  <div class="featured-hero-scrim"></div>
 
-        {% if latest_album.tags %}
-          <div class="album-tags-list">
-            {% for tag in latest_album.tags %}
-              <span class="album-tag">#{{ tag }}</span>
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        {% if latest_album.album %}
-          <div class="album-link-section mobile-only">
-            <span class="album-link-label">From the album</span>
-            <a class="album-link" href="{{ latest_album_url | relative_url }}">
-              {{ latest_album.album }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 17L17 7M17 7H7M17 7v10"/>
-              </svg>
-            </a>
-          </div>
+  <div class="featured-hero-inner">
+    <!-- Text side -->
+    <div class="featured-hero-text">
+      <div class="section-label">Featured Track</div>
+      <div class="featured-meta-top">
+        <span>{{ latest_album.date | date: "%B %d, %Y" }}</span>
+        {% if latest_album.length %}
+          <span class="dot-separator"></span>
+          <span>{{ latest_album.length }}</span>
         {% endif %}
       </div>
+      <h2 class="featured-title">{{ latest_album.title }}</h2>
 
-      <div class="album-info">
-        <div class="album-header-group">
-          <div class="album-meta-top">
-            <span class="album-date">{{ latest_album.date | date: "%B %d, %Y" }}</span>
-            {% if latest_album.length %}
-              <span class="dot-separator"></span>
-              <span class="album-length">{{ latest_album.length }}</span>
-            {% endif %}
-          </div>
-          <h2 class="album-display-title">{{ latest_album.title }}</h2>
+      {% if latest_album.description %}
+        <div class="featured-body-text">
+          {{ latest_album.description | markdownify }}
         </div>
+      {% endif %}
 
-        {% if latest_album.description %}
-          <div class="album-body-text">
-            {{ latest_album.description | markdownify }}
-          </div>
-        {% endif %}
+      {% if latest_album.tags %}
+        <div class="album-tags-list">
+          {% for tag in latest_album.tags %}
+            <span class="album-tag">#{{ tag }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
 
-        {% if latest_album.album %}
-          <div class="album-link-section desktop-only">
-            <span class="album-link-label">From the album</span>
-            <a class="album-link" href="{{ latest_album_url | relative_url }}">
-              {{ latest_album.album }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 17L17 7M17 7H7M17 7v10"/>
-              </svg>
-            </a>
-          </div>
-        {% endif %}
+      <!-- Equal-weight links: Album + Dev Log -->
+      {% if latest_album.album %}
+        <div class="featured-links">
+          <a class="featured-link" href="{{ latest_album_url | relative_url }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+            </svg>
+            {{ latest_album.album }}
+          </a>
+          <a class="featured-link devlog-link-btn" href="{{ '/devlog/' | relative_url }}#{{ latest_album.title | slugify }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Dev Log
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Video side -->
+    <div class="featured-hero-video">
+      <div class="video-card">
+        <div class="video-container" style="aspect-ratio: {{ latest_album.aspect_ratio | default: '16/9' }};">
+          <video
+            src="{{ latest_album.video_url | relative_url }}"
+            {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
+            playsinline
+            loop
+            muted
+            autoplay
+            controls></video>
+        </div>
       </div>
     </div>
   </div>
@@ -131,6 +138,13 @@ title: Home
               <p class="album-card-desc">{{ album_page.description | markdownify | strip_html | truncate: 100 }}</p>
             {% endif %}
             <span class="album-card-meta">{{ album_tracks_list.size }} tracks</span>
+            {% assign album_tech_tracks = album_tracks_list | where_exp: "t", "t.tech_blurb" %}
+            {% if album_tech_tracks.size > 0 %}
+              <span class="tech-indicator-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Dev log
+              </span>
+            {% endif %}
           </div>
         </a>
       {% endfor %}
@@ -235,73 +249,62 @@ title: Home
     color: var(--text-secondary);
   }
   
-  .featured-album-section {
-    padding-bottom: 8rem;
+  /* ── Featured Hero ── */
+  .featured-hero {
     position: relative;
-  }
-  
-  .narrow {
-    max-width: 850px;
-  }
-  
-  .album-container {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 3.5rem;
-    align-items: flex-start;
-  }
-
-  .video-side {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .video-card {
-    border-radius: 40px;
     overflow: hidden;
-    background: #050505;
-    box-shadow: 0 60px 120px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
-  }
-
-  .video-card.large {
-    border-radius: 40px;
-  }
-  
-  .video-card:hover {
-    transform: scale(1.01);
-  }
-  
-  .video-container {
-    position: relative;
-    border-radius: 40px;
-    overflow: hidden;
-    /* aspect-ratio set via inline style from front-matter */
-    background: #000;
-  }
-
-  .video-container video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    cursor: pointer;
-  }
-  
-  .album-info {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .album-header-group {
     margin-bottom: 2rem;
   }
-  
-  .album-meta-top {
+  .featured-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .featured-hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: blur(30px) brightness(0.3) saturate(1.4);
+    transform: scale(1.1);
+  }
+  .featured-hero-bg img.unique-bg {
+    filter: brightness(0.5) saturate(1.15);
+    transform: none;
+    object-position: center;
+  }
+  .featured-hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      to right,
+      rgba(13, 13, 13, 0.8) 0%,
+      rgba(13, 13, 13, 0.6) 40%,
+      rgba(13, 13, 13, 0.3) 70%,
+      rgba(13, 13, 13, 0.15) 100%
+    );
+  }
+  .featured-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+    align-items: center;
+  }
+  .featured-hero-text {
+    flex: 1;
+    min-width: 0;
+  }
+  .featured-hero-video {
+    width: 420px;
+    flex-shrink: 0;
+  }
+  .featured-meta-top {
     font-size: 0.8rem;
     font-weight: 600;
     opacity: 0.3;
@@ -309,12 +312,59 @@ title: Home
     letter-spacing: 0.2em;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
     gap: 1rem;
     margin-bottom: 0.75rem;
-    will-change: transform, opacity;
   }
-  
+  .featured-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin: 0 0 1rem;
+    line-height: 1.15;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+  }
+  .featured-body-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .featured-body-text p {
+    margin: 0;
+  }
+  .featured-links {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .featured-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-primary, #8b5cf6);
+    text-decoration: none;
+    padding: 0.65rem 1.25rem;
+    border-radius: 100px;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    background: rgba(139, 92, 246, 0.08);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(8px);
+  }
+  .featured-link:hover {
+    background: rgba(139, 92, 246, 0.18);
+    border-color: rgba(139, 92, 246, 0.45);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
+  }
+
+  .narrow {
+    max-width: 850px;
+  }
+
   .dot-separator {
     width: 4px;
     height: 4px;
@@ -322,80 +372,23 @@ title: Home
     border-radius: 50%;
   }
 
-  .album-album {
-    color: inherit;
-    text-decoration: none;
-    opacity: 0.85;
-    transition: opacity 0.3s;
-  }
-  .album-album:hover {
-    opacity: 1;
-  }
-  
-  .album-display-title {
-    font-size: clamp(2rem, 4vw, 3rem);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin: 0;
-    line-height: 1.2;
-  }
-  
-  .album-body-text {
-    font-size: 1.1rem;
-    line-height: 1.6;
-    opacity: 0.7;
-    margin-bottom: 1.5rem;
-    font-weight: 400;
+  .video-card {
+    border-radius: 20px;
     overflow: hidden;
+    background: #000;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
   }
-
-  .album-body-text p {
-    margin: 0;
+  .video-container {
+    position: relative;
+    overflow: hidden;
+    background: #000;
   }
-
-  .album-link-section {
-    margin-bottom: 1.5rem;
-    text-align: left;
-  }
-
-  .album-link-label {
+  .video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    opacity: 0.4;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 0.75rem;
-  }
-
-  .album-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--accent-primary, #8b5cf6);
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 100px;
-    border: 1px solid rgba(139, 92, 246, 0.2);
-    background: rgba(139, 92, 246, 0.05);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .album-link:hover {
-    background: rgba(139, 92, 246, 0.15);
-    border-color: rgba(139, 92, 246, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.2);
-  }
-
-  .album-link svg {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .album-link:hover svg {
-    transform: translate(2px, -2px);
+    cursor: pointer;
   }
   
   
@@ -656,22 +649,44 @@ title: Home
       padding: 4rem 0 8rem;
     }
     .video-container { border-radius: 20px; max-height: 70vh; }
-    .video-card { border-radius: 20px; }
+    .video-card { border-radius: 16px; }
     .grid-video-container { max-height: 70vh; }
     :root {
       --hero-font-size: clamp(2.8rem, 12vw, 5rem);
     }
     .hero-section { padding: 8rem 0 4rem; }
     .hero-subtitle { margin-top: 1.5rem; }
-    .album-container { 
-      grid-template-columns: 1fr;
-      gap: 2rem; 
+    .featured-hero-inner {
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 2rem 1.25rem 3rem;
     }
-    .album-info { text-align: center; order: -1; }
-    .album-link-section { text-align: center; }
+    .featured-hero-video {
+      width: 100%;
+    }
+    .featured-hero-scrim {
+      background: linear-gradient(
+        to bottom,
+        rgba(13, 13, 13, 0.85) 0%,
+        rgba(13, 13, 13, 0.6) 60%,
+        rgba(13, 13, 13, 0.4) 100%
+      );
+    }
+    .featured-title { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .featured-meta-top { display: none; }
+    .featured-body-text { font-size: 1rem; }
+    .featured-links { justify-content: center; }
     .album-tags-list { justify-content: center; }
-    .album-display-title { font-size: clamp(1.8rem, 8vw, 2.5rem); }
-    .album-meta-top { display: none; }
-    .album-body-text { font-size: 1rem; margin-bottom: 1.5rem; }
+  }
+
+  /* Album card dev log badge */
+  .tech-indicator-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    color: var(--accent-primary, #8b5cf6);
+    opacity: 0.6;
+    margin-top: 0.5rem;
   }
 </style>
