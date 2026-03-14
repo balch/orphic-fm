@@ -5,7 +5,7 @@ description: "Gemini Flash 3.0 with a (too) heavy drum backing"
 date: 2026-01-13
 album: "Bootstrap"
 track: 4
-video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/Reprise%20Surprise.mp4"
+video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/Reprise.Surprise.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["ai", "flash3", "drums", "swirl"]
 tech_blurb: "One of the first AI-generated tracks using Gemini Flash 3.0. Recorded just after AI features were consolidated into commonMain and multi-model support was centralized."
