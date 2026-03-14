@@ -6,7 +6,7 @@ date: 2026-01-11
 album: "Bootstrap"
 track: 2
 featuredSong: true
-video_url: "/assets/albums/2026-01-11-Bootstrap/Daisy.mp4"
+video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/Daisy.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["human", "drums", "drone"]
 tech_blurb: "Recorded the same day the AI agent got multi-provider support and the drum machine got its mix control. The 808-style drum synth and Rings-inspired resonator had just landed the day before."

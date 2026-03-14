@@ -102,7 +102,7 @@ layout: default
           <div class="devlog-song-media">
             <div class="devlog-song-video">
               <video
-                src="{{ track.video_url | relative_url }}"
+                src="{{ track.video_url }}"
                 {% if track.poster_url %}poster="{{ track.poster_url | relative_url }}"{% endif %}
                 controls
                 playsinline

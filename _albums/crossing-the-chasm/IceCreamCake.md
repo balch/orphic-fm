@@ -5,7 +5,7 @@ description: "Orpheus was feeling a little Pink on Valentines day and decided to
 date: 2026-02-14
 album: "Crossing the Chasm"
 track: 2
-video_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/IceCreamCake.mp4"
+video_url: "https://github.com/balch/orphic-fm/releases/download/crossing-the-chasm-assets/IceCreamCake.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster.webp"
 tags: ["human", "tts", "flux", "delay", "reverb"]
 tech_blurb: "A Valentine's Day recording using TTS and the new Flux module. The full Marbles engine in Flux and the animated Speech Panel had just been completed the day before."

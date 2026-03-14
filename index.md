@@ -93,7 +93,7 @@ title: Home
       <div class="video-card">
         <div class="video-container" style="aspect-ratio: {{ latest_album.aspect_ratio | default: '16/9' }};">
           <video
-            src="{{ latest_album.video_url | relative_url }}"
+            src="{{ latest_album.video_url }}"
             {% if latest_album.poster_url %}poster="{{ latest_album.poster_url | relative_url }}"{% endif %}
             playsinline
             loop
@@ -162,7 +162,7 @@ title: Home
         <div class="grid-item">
           <div class="grid-video-container" style="aspect-ratio: {{ album.aspect_ratio | default: '16/9' }};">
             <video
-              src="{{ album.video_url | relative_url }}"
+              src="{{ album.video_url }}"
               {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
               class="video-lightbox-trigger"
               controls

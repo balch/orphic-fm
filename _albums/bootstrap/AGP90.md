@@ -5,7 +5,7 @@ description: "@Preview: Celebration song for the Gradle Plugin migration"
 date: 2026-01-24
 album: "Bootstrap"
 track: 3
-video_url: "/assets/albums/2026-01-11-Bootstrap/AGP9.mp4"
+video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/AGP9.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["human", "drums", "organ", "pitch", "cowbell", "fm", "drone"]
 tech_blurb: "Celebrates the AGP 9.0 / Gradle 9.3 migration. Recorded the day Warps got Duo LFO modulation and DSP plugin access was centralized."

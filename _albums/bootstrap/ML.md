@@ -5,7 +5,7 @@ description: "Grinding, Metallic, Bending drone generated entirely by Orpheus us
 date: 2026-01-25
 album: "Bootstrap"
 track: 5
-video_url: "/assets/albums/2026-01-11-Bootstrap/ML.mp4"
+video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/ML.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["ai", "flash3", "drone", "machine"]
 tech_blurb: "Entirely AI-generated via Gemini Flash 3.0. Recorded the day the Looper and Resonator panels were integrated into Desktop and Warps routing was refined."
