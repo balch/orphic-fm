@@ -5,7 +5,7 @@ description: "This song features 4 new oscillators and a new Bender toy on Deskt
 date: 2026-02-26
 album: "Crossing the Chasm"
 track: 4
-video_url: "https://github.com/balch/orphic-fm/releases/download/crossing-the-chasm-assets/GoodNightBrasi.mp4"
+video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/GoodNightBrasi.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster.webp"
 tags: ["human", "bender", "strings", "looper", "fishes"]
 tech_blurb: "Features 4 new oscillators and the Bender toy. Recorded the same day the Aquarium visualization was added -- fitting for a song where Orpheus sleeps above the fishes."

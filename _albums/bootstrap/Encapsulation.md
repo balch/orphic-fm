@@ -5,7 +5,7 @@ description: "Melodic buildup to sweet droney howl aided by the clang of the res
 date: 2026-02-05
 album: "Bootstrap"
 track: 1
-video_url: "https://github.com/balch/orphic-fm/releases/download/bootstrap-assets/Encapsulation.mp4"
+video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/Encapsulation.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
 tags: ["human", "drums", "drone", "lfo", "resonator"]
 tech_blurb: "Recorded during the Ports DSL and plugin architecture overhaul. The resonator and LFO heard here were being refined alongside a new type-safe DSP port system."

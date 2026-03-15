@@ -24,10 +24,11 @@ Video MP4s are stored as GitHub Release assets (not in git) to keep the repo sma
    gh release view <album-slug>-assets
    ```
 
-4. **Set `video_url` in each track's front matter** to the release URL:
+4. **Set `video_url` in each track's front matter** to the Cloudflare Worker proxy URL:
    ```yaml
-   video_url: "https://github.com/balch/orphic-fm/releases/download/<album-slug>-assets/<filename>.mp4"
+   video_url: "https://orphic-fm-video.orphic-fm.workers.dev/<album-slug>-assets/<filename>.mp4"
    ```
+   > Videos are proxied through a Cloudflare Worker (`worker/`) that serves correct `Content-Type: video/mp4` headers. GitHub Release URLs serve `application/octet-stream`, which prevents playback on iOS Safari.
 
 5. **Commit and push** the markdown changes. The MP4s stay out of git.
 
@@ -37,6 +38,19 @@ Video MP4s are stored as GitHub Release assets (not in git) to keep the repo sma
 |---|---|
 | `bootstrap-assets` | Bootstrap |
 | `crossing-the-chasm-assets` | Crossing the Chasm |
+
+## Video Proxy (Cloudflare Worker)
+
+The `worker/` directory contains a Cloudflare Worker that proxies GitHub Release video assets with correct HTTP headers for iOS Safari compatibility.
+
+- **Why:** GitHub Release assets are served with `Content-Type: application/octet-stream` and `Content-Disposition: attachment`, which prevents inline video playback on iOS Safari.
+- **Deployed at:** `https://orphic-fm-video.orphic-fm.workers.dev`
+- **URL pattern:** `/<release-tag>/<filename.mp4>`
+
+To redeploy after changes:
+```bash
+cd worker && npx wrangler deploy
+```
 
 ## Updating the Synth
 
@@ -50,4 +64,4 @@ To update: replace the files in `synth/`, commit, and push.
 bundle exec jekyll serve
 ```
 
-Videos load from GitHub Releases, so an internet connection is needed for video playback during local development.
+Videos load from the Cloudflare Worker proxy (which fetches from GitHub Releases), so an internet connection is needed for video playback during local development.

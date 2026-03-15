@@ -5,7 +5,7 @@ description: "MediaPipe + ML + ASL = Maestro Mode. In this master-POS, Orpheus i
 date: 2026-02-22
 album: "Crossing the Chasm"
 track: 3
-video_url: "https://github.com/balch/orphic-fm/releases/download/crossing-the-chasm-assets/handwavey.mp4"
+video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/handwavey.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/AntBandHandwavey.jpg"
 aspect_ratio: "1006/1080"
 tags: ["human", "maestro", "strings", "Ant-Band"]
