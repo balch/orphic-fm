@@ -8,7 +8,7 @@ track: 1
 featuredSong: true
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/0-2-1-assets/WYSIWYG.mp4"
 poster_url: "/assets/albums/2026-03-20-0-2-1/poster.webp"
-length: "2:47"
+length: "2:20"
 tags: ["human", "bass", "signal-viz", "lfo"]
 tech_blurb: "First track on the new C++ audio bus. The signal visualization provides new insights to whats the shape of the sound and the Bassline module adds the missing groove."
 tech_content: |
