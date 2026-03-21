@@ -5,7 +5,7 @@ description: "Seeing is believing. A Bassline funk combined with a PolyLFO orche
 date: 2026-03-20
 album: "0-2-1"
 track: 1
-featuredSong: true
+featuredSong: false
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/0-2-1-assets/WYSIWYG.mp4"
 poster_url: "/assets/albums/2026-03-20-0-2-1/poster.webp"
 length: "2:20"
