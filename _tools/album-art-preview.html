@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>0-2-1 Album Art Preview — Iteration 3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@200;300;400;600&family=Share+Tech+Mono&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #050509;
+    color: #ccc;
+    font-family: 'Oxanium', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 { font-size: 13px; letter-spacing: 6px; text-transform: uppercase; color: #444; margin-bottom: 30px; }
+  canvas { border: 1px solid #111; }
+</style>
+</head>
+<body>
+
+<h1>0-2-1 — Iteration 3</h1>
+<canvas id="canvas" width="1080" height="1080"></canvas>
+
+<script>
+document.fonts.ready.then(() => {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const w = 1080, h = 1080;
+
+  // ── Spectrum color helper ──────────────────────────
+  function spectral(t) {
+    const c = [
+      [200,50,80],[220,60,40],[240,140,20],[230,210,30],
+      [100,210,50],[30,200,100],[20,200,180],[30,180,220],
+      [60,120,220],[100,70,200],[140,60,180]
+    ];
+    const idx = t * (c.length - 1);
+    const i = Math.floor(idx), f = idx - i;
+    const a = c[Math.min(i, c.length-1)], b = c[Math.min(i+1, c.length-1)];
+    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
+  }
+
+  // ── Background ─────────────────────────────────────
+  const bg = ctx.createRadialGradient(w*0.3, h*0.5, 0, w*0.3, h*0.5, w*0.75);
+  bg.addColorStop(0, '#0c0b14');
+  bg.addColorStop(0.5, '#070710');
+  bg.addColorStop(1, '#020206');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,w,h);
+
+  // ── Title — prominent but clean ──
+  const titleY = 58;
+  ctx.save();
+  ctx.font = `200 60px 'Oxanium', monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.letterSpacing = '16px';
+
+  ctx.shadowColor = 'rgba(220, 195, 55, 0.25)';
+  ctx.shadowBlur = 30;
+  ctx.fillStyle = 'rgba(215, 190, 55, 0.7)';
+  ctx.fillText('0 - 2 - 1', w / 2, titleY);
+
+  // Orphic-FM subtitle
+  ctx.shadowBlur = 0;
+  ctx.font = `300 12px 'Oxanium', monospace`;
+  ctx.fillStyle = 'rgba(180, 170, 100, 0.35)';
+  ctx.letterSpacing = '10px';
+  ctx.fillText('O R P H I C - F M', w / 2, titleY + 40);
+  ctx.restore();
+
+  // ── Module drawing helpers ─────────────────────────
+  function drawModuleBox(x, y, bw, bh, color, alpha) {
+    ctx.save();
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 40;
+    ctx.strokeStyle = color.replace(')', `,${alpha * 0.7})`).replace('rgb', 'rgba');
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    const r = 6;
+    ctx.roundRect(x, y, bw, bh, r);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = `rgba(24, 24, 45, 0.7)`;
+    ctx.beginPath();
+    ctx.roundRect(x, y, bw, bh, r);
+    ctx.fill();
+
+    ctx.strokeStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.roundRect(x, y, bw, bh, r);
+    ctx.stroke();
+
+    const ca = 8;
+    ctx.strokeStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(x, y+ca); ctx.lineTo(x, y); ctx.lineTo(x+ca, y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+bw-ca, y); ctx.lineTo(x+bw, y); ctx.lineTo(x+bw, y+ca); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, y+bh-ca); ctx.lineTo(x, y+bh); ctx.lineTo(x+ca, y+bh); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+bw-ca, y+bh); ctx.lineTo(x+bw, y+bh); ctx.lineTo(x+bw, y+bh-ca); ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawLabel(text, x, y, size, color, alpha, align) {
+    ctx.save();
+    ctx.font = `${size}px 'Share Tech Mono', monospace`;
+    ctx.textAlign = align || 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.fillText(text, x, y);
+    ctx.restore();
+  }
+
+  function drawKnob(cx, cy, radius, value, color, alpha, label, valText) {
+    ctx.save();
+    const startAngle = Math.PI * 0.75;
+    const endAngle = Math.PI * 2.25;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startAngle, endAngle, false);
+    ctx.strokeStyle = `rgba(40, 40, 60, ${alpha * 0.6})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    const valAngle = startAngle + (endAngle - startAngle) * value;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startAngle, valAngle, false);
+    ctx.strokeStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    const dx = cx + Math.cos(valAngle) * radius;
+    const dy = cy + Math.sin(valAngle) * radius;
+    ctx.beginPath();
+    ctx.arc(dx, dy, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    if (label) {
+      ctx.font = `9px 'Share Tech Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = `rgba(140, 140, 170, ${alpha * 0.7})`;
+      ctx.fillText(label, cx, cy + radius + 13);
+    }
+    if (valText) {
+      ctx.font = `8px 'Share Tech Mono', monospace`;
+      ctx.fillStyle = color.replace(')', `,${alpha * 0.5})`).replace('rgb', 'rgba');
+      ctx.fillText(valText, cx, cy + radius + 23);
+    }
+    ctx.restore();
+  }
+
+  function drawMiniWaveform(x, y, bw, bh, type, color, alpha) {
+    ctx.save();
+    ctx.beginPath();
+    const steps = 60;
+    for (let s = 0; s <= steps; s++) {
+      const t = s / steps;
+      const px = x + t * bw;
+      let py;
+      if (type === 'sine') {
+        py = y + bh/2 + Math.sin(t * Math.PI * 4) * bh * 0.35;
+      } else if (type === 'saw') {
+        const phase = (t * 3) % 1;
+        py = y + bh * 0.15 + phase * bh * 0.7;
+      }
+      if (s === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── Tightened layout: modules close to title ───────
+  const lfoX = 55, lfoY = 220;
+  const lfoW = 180, lfoH = 215;
+  const lfoColor = 'rgb(120, 220, 80)';
+
+  drawModuleBox(lfoX, lfoY, lfoW, lfoH, lfoColor, 0.95);
+
+  drawLabel('LFO', lfoX + lfoW/2, lfoY + 18, 14, lfoColor, 0.95, 'center');
+  drawLabel('1-4', lfoX + lfoW/2, lfoY + 32, 9, lfoColor, 0.55, 'center');
+
+  ctx.strokeStyle = 'rgba(120, 220, 80, 0.25)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(lfoX + 12, lfoY + 42); ctx.lineTo(lfoX + lfoW - 12, lfoY + 42); ctx.stroke();
+
+  drawKnob(lfoX + 48, lfoY + 72, 15, 0.5, lfoColor, 0.95, 'ψ', '0.50');
+  drawKnob(lfoX + 132, lfoY + 72, 15, 1.0, lfoColor, 0.95, '#', '1.00');
+
+  // Mode badge
+  ctx.save();
+  ctx.fillStyle = 'rgba(200, 100, 50, 0.7)';
+  ctx.beginPath(); ctx.roundRect(lfoX + 75, lfoY + 62, 30, 14, 3); ctx.fill();
+  ctx.font = `bold 8px 'Share Tech Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillText('CHD', lfoX + 90, lfoY + 71);
+  ctx.restore();
+
+  drawKnob(lfoX + 48, lfoY + 130, 15, 0.51, lfoColor, 0.95, '♪', '0.51');
+  drawKnob(lfoX + 132, lfoY + 130, 15, 0.5, lfoColor, 0.95, 'RATE', '0.50');
+
+  drawMiniWaveform(lfoX + 15, lfoY + 165, lfoW - 30, 30, 'sine', lfoColor, 0.8);
+
+  ctx.save();
+  ctx.font = `8px 'Share Tech Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(80, 180, 200, 0.5)';
+  ctx.fillText('F', lfoX + 28, lfoY + lfoH - 6);
+  ctx.fillStyle = 'rgba(80, 180, 200, 0.3)';
+  ctx.fillText('S', lfoX + 46, lfoY + lfoH - 6);
+  ctx.restore();
+
+  // ── Bassline Module ────────────────────────────────
+  const bassX = 55, bassY = 480;
+  const bassW = 180, bassH = 250;
+  const bassColor = 'rgb(220, 170, 40)';
+
+  drawModuleBox(bassX, bassY, bassW, bassH, bassColor, 0.95);
+
+  drawLabel('BASSLINE', bassX + bassW/2, bassY + 18, 13, bassColor, 0.95, 'center');
+
+  ctx.save();
+  ctx.font = `8px 'Share Tech Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(220, 170, 40, 0.45)';
+  ctx.fillText('Phase Dist · Dorian · D2', bassX + bassW/2, bassY + 34);
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(220, 170, 40, 0.25)';
+  ctx.beginPath(); ctx.moveTo(bassX + 12, bassY + 44); ctx.lineTo(bassX + bassW - 12, bassY + 44); ctx.stroke();
+
+  // Step sequencer
+  const seqY = bassY + 56;
+  const stepW = 8, stepGap = 2.5;
+  const seqStartX = bassX + (bassW - 16 * (stepW + stepGap)) / 2;
+  const stepPattern = [1,0,1,1,0,1,0,1,1,0,1,1,0,0,0,0];
+  for (let i = 0; i < 16; i++) {
+    const sx = seqStartX + i * (stepW + stepGap);
+    const active = stepPattern[i];
+    const stepH = active ? 12 + Math.random() * 8 : 4;
+    ctx.fillStyle = active
+      ? `rgba(220, 170, 40, ${0.55 + Math.random() * 0.35})`
+      : 'rgba(220, 170, 40, 0.15)';
+    ctx.fillRect(sx, seqY + 20 - stepH, stepW, stepH);
+    if (i < 12) {
+      ctx.font = `6px 'Share Tech Mono', monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(220, 170, 40, 0.25)';
+      ctx.fillText(i+1, sx + stepW/2, seqY + 28);
+    }
+  }
+  drawLabel('STEPS 12', bassX + bassW/2, seqY - 2, 8, bassColor, 0.4, 'center');
+
+  drawKnob(bassX + 38, bassY + 112, 13, 0.45, bassColor, 0.95, 'CUT', '0.45');
+  drawKnob(bassX + 90, bassY + 112, 13, 0.6, bassColor, 0.95, 'RESO', '0.60');
+  drawKnob(bassX + 142, bassY + 112, 13, 0.4, bassColor, 0.95, 'ENV', '0.40');
+
+  drawKnob(bassX + 38, bassY + 168, 13, 0.47, 'rgb(200, 130, 50)', 0.9, 'DRV', '0.47');
+  drawKnob(bassX + 90, bassY + 168, 13, 0.26, 'rgb(200, 130, 50)', 0.9, 'MIX', '0.26');
+  drawKnob(bassX + 142, bassY + 168, 13, 0.38, 'rgb(200, 130, 50)', 0.9, 'MUT', '0.38');
+
+  drawMiniWaveform(bassX + 15, bassY + 202, bassW - 30, 26, 'saw', bassColor, 0.75);
+
+  // ── Output dots on LFO and Bassline ────────────────
+  const lfoOutX = lfoX + lfoW + 2;
+  const lfoOutY = lfoY + lfoH / 2;
+  ctx.beginPath();
+  ctx.arc(lfoOutX, lfoOutY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(120, 220, 80, 0.8)';
+  ctx.shadowColor = 'rgb(120, 220, 80)';
+  ctx.shadowBlur = 12;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  const bassOutX = bassX + bassW + 2;
+  const bassOutY = bassY + bassH / 2;
+  ctx.beginPath();
+  ctx.arc(bassOutX, bassOutY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(220, 170, 40, 0.8)';
+  ctx.shadowColor = 'rgb(220, 170, 40)';
+  ctx.shadowBlur = 12;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // ── Orpheus Module (the prism) — high up, signals converge UP ──
+  const orphX = 400, orphY = 130;
+  const orphW = 180, orphH = 220;
+  const orphColor = 'rgb(180, 120, 220)';
+  const orphCenterY = orphY + orphH / 2;
+
+  drawModuleBox(orphX, orphY, orphW, orphH, orphColor, 0.95);
+
+  drawLabel('ORPHEUS', orphX + orphW/2, orphY + 18, 14, orphColor, 0.95, 'center');
+
+  ctx.save();
+  ctx.font = `8px 'Share Tech Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(180, 120, 220, 0.45)';
+  ctx.fillText('Combine · Spread', orphX + orphW/2, orphY + 34);
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(180, 120, 220, 0.25)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath(); ctx.moveTo(orphX + 12, orphY + 44); ctx.lineTo(orphX + orphW - 12, orphY + 44); ctx.stroke();
+
+  drawKnob(orphX + 45, orphY + 78, 14, 0.72, orphColor, 0.95, 'VOICE', '0.72');
+  drawKnob(orphX + 135, orphY + 78, 14, 0.60, orphColor, 0.95, 'SPREAD', '0.60');
+
+  drawKnob(orphX + 45, orphY + 138, 14, 0.55, 'rgb(140, 90, 200)', 0.9, 'TIMBRE', '0.55');
+  drawKnob(orphX + 135, orphY + 138, 14, 0.40, 'rgb(140, 90, 200)', 0.9, 'MORPH', '0.40');
+
+  // Mini waveform: combined spectral spread
+  ctx.save();
+  const oWaveX = orphX + 15, oWaveY = orphY + 172, oWaveW = orphW - 30, oWaveH = 26;
+  const orphRng = seededRandom(7777);
+  // Draw converging waves that split into spectrum
+  const midPoint = 0.4;
+  for (let wi = 0; wi < 6; wi++) {
+    const t0 = wi / 5;
+    const [cr, cg, cb] = spectral(t0);
+    ctx.beginPath();
+    for (let s = 0; s <= 40; s++) {
+      const t = s / 40;
+      const px = oWaveX + t * oWaveW;
+      // Converge to center then fan out
+      const spread = t < midPoint
+        ? (1 - t / midPoint) * (t0 - 0.5) * oWaveH * 0.6
+        : ((t - midPoint) / (1 - midPoint)) * (t0 - 0.5) * oWaveH * 0.8;
+      const wave = Math.sin(t * Math.PI * (4 + wi)) * 2 * (t < midPoint ? (1 - t/midPoint) * 0.3 : 0.3);
+      const py = oWaveY + oWaveH/2 + spread + wave;
+      if (s === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.strokeStyle = `rgba(${cr|0}, ${cg|0}, ${cb|0}, 0.5)`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Input dots on left side of Orpheus
+  const orphInTopY = orphY + orphH * 0.3;
+  const orphInBotY = orphY + orphH * 0.7;
+  ctx.beginPath();
+  ctx.arc(orphX - 2, orphInTopY, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(120, 220, 80, 0.6)';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(orphX - 2, orphInBotY, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(220, 80, 40, 0.6)';
+  ctx.fill();
+
+  // ── Helper: bezier point along quadratic curve ─────
+  function bezierPoint(t, x0, y0, cpx, cpy, x1, y1) {
+    return [
+      (1-t)*(1-t)*x0 + 2*(1-t)*t*cpx + t*t*x1,
+      (1-t)*(1-t)*y0 + 2*(1-t)*t*cpy + t*t*y1
+    ];
+  }
+  function bezierNormal(t, x0, y0, cpx, cpy, x1, y1) {
+    // Tangent of quadratic bezier
+    const tx = 2*(1-t)*(cpx-x0) + 2*t*(x1-cpx);
+    const ty = 2*(1-t)*(cpy-y0) + 2*t*(y1-cpy);
+    const len = Math.hypot(tx, ty) || 1;
+    return [-ty/len, tx/len]; // perpendicular
+  }
+
+  // ── LFO → Orpheus: multiple colored waves, varying thickness ──
+  ctx.save();
+  const lfoCpx = (lfoOutX + 6 + orphX - 4) / 2;
+  const lfoCpy = lfoOutY - 60; // curve upward
+  const lfoWaves = [
+    { color: 'rgb(80, 200, 120)',  freq: 5,  amp: 8,  width: 2.0 },
+    { color: 'rgb(120, 220, 80)',  freq: 7,  amp: 12, width: 1.4 },
+    { color: 'rgb(60, 180, 200)',  freq: 4,  amp: 6,  width: 2.5 },
+    { color: 'rgb(100, 240, 60)',  freq: 9,  amp: 10, width: 0.8 },
+    { color: 'rgb(80, 160, 220)',  freq: 6,  amp: 14, width: 1.0 },
+  ];
+  for (const lw of lfoWaves) {
+    ctx.beginPath();
+    for (let s = 0; s <= 80; s++) {
+      const t = s / 80;
+      const [bx, by] = bezierPoint(t, lfoOutX + 6, lfoOutY, lfoCpx, lfoCpy, orphX - 4, orphInTopY);
+      const [nx, ny] = bezierNormal(t, lfoOutX + 6, lfoOutY, lfoCpx, lfoCpy, orphX - 4, orphInTopY);
+      const envelope = Math.sin(t * Math.PI);
+      const wave = Math.sin(t * Math.PI * lw.freq) * lw.amp * (0.3 + 0.7 * envelope);
+      if (s === 0) ctx.moveTo(bx + nx * wave, by + ny * wave);
+      else ctx.lineTo(bx + nx * wave, by + ny * wave);
+    }
+    ctx.strokeStyle = lw.color.replace(')', ', 0.35)').replace('rgb', 'rgba');
+    ctx.lineWidth = lw.width;
+    ctx.stroke();
+    // Glow
+    ctx.shadowColor = lw.color;
+    ctx.shadowBlur = 8;
+    ctx.strokeStyle = lw.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
+    ctx.lineWidth = lw.width + 2;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+  ctx.restore();
+
+  // ── Bassline → Orpheus: red stepped wave ───────────
+  ctx.save();
+  const bassCpx = (bassOutX + 6 + orphX - 4) / 2 + 20;
+  const bassCpy = bassOutY - 80; // curve upward strongly
+  const bassStepCount = 14;
+  const bassStepPattern = [1, 0.3, 0.8, 1, 0.2, 0.9, 0.15, 1, 0.7, 0.2, 0.85, 1, 0.1, 0.6];
+
+  // Stepped waveform path — holds value then jumps
+  ctx.beginPath();
+  let prevStepY = 0;
+  for (let s = 0; s <= 120; s++) {
+    const t = s / 120;
+    const [bx, by] = bezierPoint(t, bassOutX + 6, bassOutY, bassCpx, bassCpy, orphX - 4, orphInBotY);
+    const [nx, ny] = bezierNormal(t, bassOutX + 6, bassOutY, bassCpx, bassCpy, orphX - 4, orphInBotY);
+    const stepIdx = Math.floor(t * bassStepCount) % bassStepCount;
+    const stepVal = bassStepPattern[stepIdx];
+    const stepAmp = (stepVal - 0.5) * 20 * Math.sin(t * Math.PI); // envelope it
+    if (s === 0) {
+      ctx.moveTo(bx + nx * stepAmp, by + ny * stepAmp);
+      prevStepY = stepAmp;
+    } else {
+      // Horizontal hold then vertical jump (staircase)
+      const [prevBx, prevBy] = bezierPoint((s-1)/120, bassOutX + 6, bassOutY, bassCpx, bassCpy, orphX - 4, orphInBotY);
+      if (Math.abs(stepAmp - prevStepY) > 0.5) {
+        // Draw horizontal to current x at old level, then jump
+        ctx.lineTo(bx + nx * prevStepY, by + ny * prevStepY);
+      }
+      ctx.lineTo(bx + nx * stepAmp, by + ny * stepAmp);
+      prevStepY = stepAmp;
+    }
+  }
+  ctx.strokeStyle = 'rgba(220, 60, 40, 0.45)';
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+  // Glow
+  ctx.shadowColor = 'rgb(220, 60, 40)';
+  ctx.shadowBlur = 12;
+  ctx.strokeStyle = 'rgba(220, 60, 40, 0.12)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Step dots at transitions
+  for (let si = 0; si < bassStepCount; si++) {
+    const t = (si + 0.5) / bassStepCount;
+    if (t > 0.95) continue;
+    const [bx, by] = bezierPoint(t, bassOutX + 6, bassOutY, bassCpx, bassCpy, orphX - 4, orphInBotY);
+    const [nx, ny] = bezierNormal(t, bassOutX + 6, bassOutY, bassCpx, bassCpy, orphX - 4, orphInBotY);
+    const stepVal = bassStepPattern[si];
+    const stepAmp = (stepVal - 0.5) * 20 * Math.sin(t * Math.PI);
+    if (stepVal > 0.6) {
+      ctx.beginPath();
+      ctx.arc(bx + nx * stepAmp, by + ny * stepAmp, 1.8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(220, 60, 40, 0.6)';
+      ctx.shadowColor = 'rgb(220, 60, 40)';
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+  ctx.restore();
+
+  // ── Orpheus output (right side) → waveform origin ──
+  const mergeX = orphX + orphW + 2;
+  const mergeY = orphCenterY;
+
+  ctx.beginPath();
+  ctx.arc(mergeX, mergeY, 5, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(180, 120, 220, 0.8)';
+  ctx.shadowColor = 'rgb(180, 120, 220)';
+  ctx.shadowBlur = 15;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // ── Seeded random for reproducible chaos ────────────
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 1103515245 + 12345) & 0x7fffffff;
+      return s / 0x7fffffff;
+    };
+  }
+
+  // Pre-generate noise tables per wave for consistent chaos
+  function makeNoiseTable(seed, len) {
+    const rng = seededRandom(seed);
+    const table = new Float32Array(len);
+    // Low-frequency noise: generate sparse then interpolate
+    const sparse = 32;
+    const anchors = [];
+    for (let i = 0; i <= Math.ceil(len / sparse); i++) anchors.push(rng() * 2 - 1);
+    for (let i = 0; i < len; i++) {
+      const idx = i / sparse;
+      const a = Math.floor(idx), b = a + 1;
+      const frac = idx - a;
+      const smooth = frac * frac * (3 - 2 * frac); // smoothstep
+      table[i] = anchors[a] * (1 - smooth) + (anchors[b] || 0) * smooth;
+    }
+    return table;
+  }
+
+  // ── Color bands: waves grouped by spectral region ──
+  // Each band = a color zone with multiple sub-waves inside
+  const bands = [
+    { tStart: 0.00, tEnd: 0.12, count: 4, label: 'rose' },
+    { tStart: 0.10, tEnd: 0.22, count: 3, label: 'red' },
+    { tStart: 0.20, tEnd: 0.32, count: 4, label: 'orange' },
+    { tStart: 0.30, tEnd: 0.45, count: 4, label: 'yellow' },
+    { tStart: 0.42, tEnd: 0.55, count: 3, label: 'lime' },
+    { tStart: 0.52, tEnd: 0.65, count: 4, label: 'green' },
+    { tStart: 0.62, tEnd: 0.74, count: 3, label: 'teal' },
+    { tStart: 0.72, tEnd: 0.82, count: 4, label: 'cyan' },
+    { tStart: 0.80, tEnd: 0.90, count: 3, label: 'blue' },
+    { tStart: 0.88, tEnd: 1.00, count: 3, label: 'violet' },
+  ];
+
+  const waveStartX = mergeX + 8;
+  const waveEndX = w + 40;
+  const waveCenterY = mergeY;
+  const totalSpread = 620;
+
+  // Hard-gated rhythm pattern
+  const rhythm = [1, 0.05, 0.85, 1, 0.05, 0.9, 0.05, 1, 0.9, 0.05, 0.75, 1, 0.05, 0.05, 0.05, 0.05];
+
+  let globalWaveIdx = 0;
+
+  for (const band of bands) {
+    // Each band has its own "inner wave" — a shared oscillation
+    // that all sub-waves in this band follow, creating cohesion
+    const bandSeed = Math.floor(band.tStart * 10000);
+    const bandFreq = 1.5 + band.tStart * 2.5; // band-level oscillation
+    const bandPhase = band.tStart * 7.3;
+
+    for (let sub = 0; sub < band.count; sub++) {
+      const subT = sub / (band.count - 1 || 1); // 0..1 within band
+      const globalT = band.tStart + (band.tEnd - band.tStart) * subT;
+      const [r, g, b] = spectral(Math.min(globalT, 1));
+
+      // Vertical position: global spread + tight clustering within band
+      const bandCenter = (band.tStart + band.tEnd) / 2;
+      const globalOffset = (bandCenter - 0.5) * totalSpread;
+      const inBandOffset = (subT - 0.5) * 28; // tight within band
+      const verticalBase = globalOffset + inBandOffset;
+
+      // Per-wave noise
+      const noise = makeNoiseTable(bandSeed * 100 + sub * 37, 501);
+      const rng = seededRandom(bandSeed * 7 + sub * 13 + 999);
+      const waveJitter = rng() * 6 - 3; // permanent Y offset jitter
+      const freqJitter = 0.7 + rng() * 0.6; // frequency variation
+      const phaseJitter = rng() * Math.PI * 2;
+
+      ctx.beginPath();
+      const steps = 500;
+      for (let s = 0; s <= steps; s++) {
+        const sx = s / steps;
+        const x = waveStartX + (waveEndX - waveStartX) * sx;
+
+        const fan = Math.pow(sx, 1.1);
+        // Angle the whole wave field downward like DSOTM's beam
+        const downwardDrift = sx * 420;
+        const baseY = waveCenterY + (verticalBase + waveJitter) * fan + downwardDrift;
+
+        // Hard gating
+        const stepPos = sx * rhythm.length * 1.8;
+        const stepIdx = Math.floor(stepPos) % rhythm.length;
+        const stepFrac = stepPos % 1;
+        const rhythmAmp = rhythm[stepIdx];
+        const edgeSm = stepFrac < 0.08 ? stepFrac / 0.08 : (stepFrac > 0.92 ? (1 - stepFrac) / 0.08 : 1);
+        const gatedAmp = rhythmAmp * edgeSm;
+
+        // Band-level wave (shared shape within color group)
+        const bandWave = Math.sin(sx * bandFreq * Math.PI * 2 + bandPhase) * 15 * fan * gatedAmp;
+
+        // Sub-wave (individual character)
+        const freq1 = (2.8 + globalT * 3.0) * freqJitter;
+        const freq2 = (6.5 + (1-globalT) * 3) * freqJitter;
+        const freq3 = (12 + globalT * 2);
+
+        const ampScale = 0.4 + 0.6 * Math.sin(globalT * Math.PI);
+        const amp1 = 20 * fan * gatedAmp * ampScale;
+        const amp2 = 9 * fan * gatedAmp;
+        const amp3 = 3.5 * fan * gatedAmp;
+
+        // Square-wave character
+        const sineWave = Math.sin(sx * freq1 * Math.PI * 2 + phaseJitter);
+        const squareish = sineWave + 0.35 * Math.sign(sineWave) * gatedAmp;
+
+        const subWave = squareish * amp1
+                    + Math.sin(sx * freq2 * Math.PI * 2 + phaseJitter * 1.7) * amp2
+                    + Math.sin(sx * freq3 * Math.PI * 2 + globalT * 0.7) * amp3;
+
+        // Noise layer — organic drift
+        const noiseAmp = 8 * fan * gatedAmp;
+        const noiseVal = noise[s] * noiseAmp;
+
+        // Occasional spikes/glitches
+        const glitch = (noise[s] > 0.7) ? (noise[s] - 0.7) * 25 * fan * gatedAmp : 0;
+
+        const y = baseY + bandWave + subWave + noiseVal + glitch;
+
+        if (s === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+
+      // Outer waves in band are dimmer, inner ones brighter
+      const bandEdgeDist = Math.abs(subT - 0.5) * 2; // 0=center, 1=edge
+      const alpha = (0.3 + 0.55 * (1 - bandEdgeDist)) * (0.5 + 0.5 * Math.sin(globalT * Math.PI));
+      ctx.strokeStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${Math.max(alpha, 0.15)})`;
+      ctx.lineWidth = 1.3 + (1 - bandEdgeDist) * 0.5;
+      ctx.stroke();
+
+      // Glow — stronger for center waves
+      ctx.save();
+      ctx.shadowColor = `rgba(${r|0}, ${g|0}, ${b|0}, ${0.35 + 0.2 * (1 - bandEdgeDist)})`;
+      ctx.shadowBlur = 8 + (1 - bandEdgeDist) * 6;
+      ctx.strokeStyle = `rgba(${r|0}, ${g|0}, ${b|0}, ${alpha * 0.2})`;
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+      ctx.restore();
+
+      globalWaveIdx++;
+    }
+  }
+
+  // ── Vertical gate markers (subtle) ─────────────────
+  // Show faint vertical lines where the gates happen
+  ctx.save();
+  for (let gi = 0; gi < rhythm.length * 1.8; gi++) {
+    const gx = waveStartX + (gi / (rhythm.length * 1.8)) * (waveEndX - waveStartX);
+    const stepIdx = Math.floor(gi) % rhythm.length;
+    if (rhythm[stepIdx] < 0.1 && gx > mergeX + 60 && gx < w - 20) {
+      const gateGrad = ctx.createLinearGradient(0, waveCenterY - 250, 0, waveCenterY + 250);
+      gateGrad.addColorStop(0, 'rgba(200,180,60,0)');
+      gateGrad.addColorStop(0.3, 'rgba(200,180,60,0.03)');
+      gateGrad.addColorStop(0.5, 'rgba(200,180,60,0.05)');
+      gateGrad.addColorStop(0.7, 'rgba(200,180,60,0.03)');
+      gateGrad.addColorStop(1, 'rgba(200,180,60,0)');
+      ctx.strokeStyle = gateGrad;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(gx, waveCenterY - 260);
+      ctx.lineTo(gx, waveCenterY + 260);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  // ── Subtle scan lines (CRT feel) ──────────────────
+  for (let x = 0; x < w; x += 3) {
+    ctx.fillStyle = `rgba(255,255,255,${0.006 + Math.random() * 0.004})`;
+    ctx.fillRect(x, 0, 1, h);
+  }
+
+  // ── Faint horizontal zero line ─────────────────────
+  ctx.save();
+  const zLine = ctx.createLinearGradient(waveStartX, 0, w, 0);
+  zLine.addColorStop(0, 'rgba(180,170,60,0)');
+  zLine.addColorStop(0.1, 'rgba(180,170,60,0.06)');
+  zLine.addColorStop(0.9, 'rgba(180,170,60,0.06)');
+  zLine.addColorStop(1, 'rgba(180,170,60,0)');
+  ctx.strokeStyle = zLine;
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(waveStartX, waveCenterY);
+  ctx.lineTo(w, waveCenterY);
+  ctx.stroke();
+  ctx.restore();
+});
+</script>
+</body>
+</html>
