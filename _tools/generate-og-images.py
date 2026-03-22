@@ -74,8 +74,11 @@ def parse_frontmatter(filepath):
     return fm
 
 
-def load_poster(poster_path):
-    """Load and crop poster to 1200x630 landscape with darkening."""
+def load_poster(poster_path, crop_gravity="center"):
+    """Load and crop poster to 1200x630 landscape.
+
+    crop_gravity controls vertical anchor: "top", "center", or "bottom".
+    """
     img = Image.open(poster_path).convert("RGBA")
 
     # Scale to fill 1200x630
@@ -84,9 +87,18 @@ def load_poster(poster_path):
     new_h = int(img.height * scale)
     img = img.resize((new_w, new_h), Image.LANCZOS)
 
-    # Center crop
-    left = (new_w - OG_WIDTH) // 2
-    top = (new_h - OG_HEIGHT) // 2
+    # Right-anchored horizontal crop (text panel covers the left)
+    left = new_w - OG_WIDTH
+
+    # Vertical crop based on gravity
+    v_excess = new_h - OG_HEIGHT
+    if crop_gravity == "top":
+        top = 0
+    elif crop_gravity == "bottom":
+        top = v_excess
+    else:
+        top = v_excess // 2
+
     img = img.crop((left, top, left + OG_WIDTH, top + OG_HEIGHT))
 
     return img
@@ -158,10 +170,10 @@ def wrap_text_ellipsis(draw, text, font, max_width, max_lines):
     return lines
 
 
-def generate_og_image(poster_path, title, description, output_path, subtitle=None):
+def generate_og_image(poster_path, title, description, output_path, subtitle=None, crop_gravity="center"):
     """Generate a single OG image with text on the left, art on the right."""
     # Load and prepare poster
-    poster = load_poster(poster_path)
+    poster = load_poster(poster_path, crop_gravity)
     img = darken_image(poster)
 
     draw = ImageDraw.Draw(img)
@@ -238,12 +250,14 @@ def process_albums():
             continue
 
         description = fm["tech_description"]
+        crop_gravity = fm.get("og_crop_gravity", "center")
         slug = album_name.lower().replace(" ", "-")
         output_dir = poster_path.parent
         output_path = output_dir / "og-landscape.png"
 
         print(f"Album: {album_name}")
-        generate_og_image(poster_path, album_name, description, output_path)
+        generate_og_image(poster_path, album_name, description, output_path,
+                         crop_gravity=crop_gravity)
 
         # Update frontmatter to point to new OG image
         og_rel = "/" + str(output_path.relative_to(ROOT))
@@ -273,9 +287,11 @@ def process_songs():
         output_dir = poster_path.parent
         output_path = output_dir / f"og-{slug}.png"
 
+        crop_gravity = fm.get("og_crop_gravity", "center")
         print(f"Song: {title} ({album})")
         generate_og_image(poster_path, title, description, output_path,
-                         subtitle=f"Orphic FM — {album}")
+                         subtitle=f"Orphic FM — {album}",
+                         crop_gravity=crop_gravity)
 
         # Update frontmatter
         og_rel = "/" + str(output_path.relative_to(ROOT))
