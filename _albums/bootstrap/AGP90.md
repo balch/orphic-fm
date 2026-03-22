@@ -7,7 +7,7 @@ album: "Bootstrap"
 track: 3
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/AGP9.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
-og_image: "/assets/albums/2026-01-11-Bootstrap/poster-small.png"
+og_image: "/assets/albums/2026-01-11-Bootstrap/og-agp-9.0.png"
 tags: ["human", "drums", "organ", "pitch", "cowbell", "fm", "drone"]
 tech_blurb: "Celebrates the AGP 9.0 / Gradle 9.3 migration. Recorded the day Warps got Duo LFO modulation and DSP plugin access was centralized."
 tech_content: |

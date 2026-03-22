@@ -8,7 +8,7 @@ track: 5
 featuredSong: true
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/BalchHotel.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/BalchHotel-poster.jpg"
-og_image: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster-small.webp"
+og_image: "/assets/albums/2026-02-08-Crossing-The-Chasm/og-the-balch-hotel.png"
 tags: ["human", "strings", "bender", "MtHood"]
 tech_blurb: "Written at the Balch Hotel in Dufur, OR. The Mt. Hood lava visualization had been added to the synth just the day before -- a serendipitous pairing of code and location."
 tech_content: |

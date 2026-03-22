@@ -7,7 +7,7 @@ album: "Bootstrap"
 track: 4
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/Reprise.Surprise.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
-og_image: "/assets/albums/2026-01-11-Bootstrap/poster-small.png"
+og_image: "/assets/albums/2026-01-11-Bootstrap/og-reprise-surprise.png"
 tags: ["ai", "flash3", "drums", "swirl"]
 tech_blurb: "One of the first AI-generated tracks using Gemini Flash 3.0. Recorded just after AI features were consolidated into commonMain and multi-model support was centralized."
 tech_content: |
