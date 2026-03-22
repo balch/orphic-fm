@@ -9,6 +9,7 @@ length: "4:48"
 featuredSong: true
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/0-2-1-assets/Insight.mp4"
 poster_url: "/assets/albums/2026-03-20-0-2-1/poster.webp"
+og_image: "/assets/albums/2026-03-20-0-2-1/poster-small.webp"
 tags: ["human", "bass", "portamento", "bugs"]
 tech_blurb: "The bass unit gains portamento and legato — a three-tier gate system lets steps rest, slide, or trigger, while pitch smoothing and sustained envelopes keep the signal flowing through transitions."
 tech_content: |

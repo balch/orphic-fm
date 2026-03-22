@@ -7,6 +7,7 @@ album: "Crossing the Chasm"
 track: 2
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/IceCreamCake.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster.webp"
+og_image: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster-small.webp"
 tags: ["human", "tts", "flux", "delay", "reverb"]
 tech_blurb: "A Valentine's Day recording using TTS and the new Flux module. The full Marbles engine in Flux and the animated Speech Panel had just been completed the day before."
 tech_content: |

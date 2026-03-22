@@ -31,6 +31,14 @@
   <meta name="description" content="{{ page_description }}">
   
   {% assign default_image = "/assets/images/og-image.png" | absolute_url %}
+  {% if page.layout == 'devlog' %}
+    {% assign newest_album_page = site.pages | where: "album", newest_album_name | first %}
+    {% if newest_album_page.og_image %}
+      {% assign devlog_og = newest_album_page.og_image %}
+    {% elsif newest_album_page.poster_url %}
+      {% assign devlog_og = newest_album_page.poster_url %}
+    {% endif %}
+  {% endif %}
   {% if page.og_image %}
     {% if page.og_image contains "://" %}
       {% assign og_image = page.og_image %}
@@ -45,6 +53,8 @@
     {% endif %}
   {% elsif page.poster_url %}
     {% assign og_image = page.poster_url | absolute_url %}
+  {% elsif devlog_og %}
+    {% assign og_image = devlog_og | absolute_url %}
   {% else %}
     {% assign og_image = default_image %}
   {% endif %}

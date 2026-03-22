@@ -7,6 +7,7 @@ album: "Bootstrap"
 track: 1
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/Encapsulation.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
+og_image: "/assets/albums/2026-01-11-Bootstrap/poster-small.png"
 tags: ["human", "drums", "drone", "lfo", "resonator"]
 tech_blurb: "Recorded during the Ports DSL and plugin architecture overhaul. The resonator and LFO heard here were being refined alongside a new type-safe DSP port system."
 tech_content: |

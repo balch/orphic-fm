@@ -8,6 +8,7 @@ track: 2
 featuredSong: true
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/Daisy.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
+og_image: "/assets/albums/2026-01-11-Bootstrap/poster-small.png"
 tags: ["human", "drums", "drone"]
 tech_blurb: "Recorded the same day the AI agent got multi-provider support and the drum machine got its mix control. The 808-style drum synth and Rings-inspired resonator had just landed the day before."
 tech_content: |

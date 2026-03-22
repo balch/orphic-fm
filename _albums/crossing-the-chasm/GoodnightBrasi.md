@@ -7,6 +7,7 @@ album: "Crossing the Chasm"
 track: 4
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/GoodNightBrasi.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster.webp"
+og_image: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster-small.webp"
 tags: ["human", "bender", "strings", "looper", "fishes"]
 tech_blurb: "Features 4 new oscillators and the Bender toy. Recorded the same day the Aquarium visualization was added -- fitting for a song where Orpheus sleeps above the fishes."
 tech_content: |

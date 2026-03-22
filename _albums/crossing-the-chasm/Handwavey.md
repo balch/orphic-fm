@@ -7,6 +7,7 @@ album: "Crossing the Chasm"
 track: 3
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/crossing-the-chasm-assets/handwavey.mp4"
 poster_url: "/assets/albums/2026-02-08-Crossing-The-Chasm/AntBandHandwavey.jpg"
+og_image: "/assets/albums/2026-02-08-Crossing-The-Chasm/poster-small.webp"
 aspect_ratio: "1006/1080"
 tags: ["human", "maestro", "strings", "Ant-Band"]
 tech_blurb: "The debut of Maestro Mode. Camera-based hand tracking via MediaPipe landed the day before, and ASL gesture routing was finalized the same day this was recorded."

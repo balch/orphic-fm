@@ -7,6 +7,7 @@ album: "Bootstrap"
 track: 5
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/bootstrap-assets/ML.mp4"
 poster_url: "/assets/albums/2026-01-11-Bootstrap/poster.png"
+og_image: "/assets/albums/2026-01-11-Bootstrap/poster-small.png"
 tags: ["ai", "flash3", "drone", "machine"]
 tech_blurb: "Entirely AI-generated via Gemini Flash 3.0. Recorded the day the Looper and Resonator panels were integrated into Desktop and Warps routing was refined."
 tech_content: |
