@@ -21,17 +21,18 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 # ── Config ──────────────────────────────────────────────────
 OG_WIDTH = 1200
 OG_HEIGHT = 630
-MARGIN_X = 60
-MARGIN_Y = 50
-TEXT_AREA_WIDTH = OG_WIDTH - (MARGIN_X * 2)
+MARGIN_X = 50
+MARGIN_Y = 40
+TEXT_PANEL_WIDTH = 520  # Left side text panel
+TEXT_AREA_WIDTH = TEXT_PANEL_WIDTH - MARGIN_X - 20  # Text wrapping width
 
 # Fonts
 FONT_TITLE = "/System/Library/Fonts/SFNS.ttf"
 FONT_BODY = "/System/Library/Fonts/HelveticaNeue.ttc"
 
-TITLE_SIZE = 52
-BODY_SIZE = 24
-BRAND_SIZE = 18
+TITLE_SIZE = 44
+BODY_SIZE = 20
+BRAND_SIZE = 16
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -92,20 +93,23 @@ def load_poster(poster_path):
 
 
 def darken_image(img):
-    """Apply dark gradient overlay for text readability."""
+    """Apply left-to-right gradient overlay — dark on left for text, clear on right for art."""
     overlay = Image.new("RGBA", (OG_WIDTH, OG_HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
-    # Bottom-heavy gradient: darker at bottom where text lives
-    for y in range(OG_HEIGHT):
-        # More aggressive darkening in bottom 60%
-        t = y / OG_HEIGHT
-        if t < 0.3:
-            alpha = int(80 + t * 100)  # Light at top
+    for x in range(OG_WIDTH):
+        t = x / OG_WIDTH
+        if t < 0.35:
+            # Solid dark on the left text panel
+            alpha = 200
+        elif t < 0.65:
+            # Fade out through the middle
+            fade = (t - 0.35) / 0.30
+            alpha = int(200 * (1 - fade))
         else:
-            alpha = int(110 + (t - 0.3) * 200)  # Darker toward bottom
-        alpha = min(alpha, 210)
-        draw.line([(0, y), (OG_WIDTH, y)], fill=(0, 0, 0, alpha))
+            # Transparent on the right — art shows through
+            alpha = 0
+        draw.line([(x, 0), (x, OG_HEIGHT)], fill=(0, 0, 0, alpha))
 
     return Image.alpha_composite(img, overlay)
 
@@ -155,7 +159,7 @@ def wrap_text_ellipsis(draw, text, font, max_width, max_lines):
 
 
 def generate_og_image(poster_path, title, description, output_path, subtitle=None):
-    """Generate a single OG image."""
+    """Generate a single OG image with text on the left, art on the right."""
     # Load and prepare poster
     poster = load_poster(poster_path)
     img = darken_image(poster)
@@ -170,52 +174,48 @@ def generate_og_image(poster_path, title, description, output_path, subtitle=Non
     font_body = ImageFont.truetype(FONT_BODY, BODY_SIZE)
     font_brand = ImageFont.truetype(FONT_BODY, BRAND_SIZE)
 
-    # Layout from bottom up
-    y_bottom = OG_HEIGHT - MARGIN_Y
+    # ── Left-panel layout: top-to-bottom ──
+    y = MARGIN_Y
 
-    # Brand line at bottom
-    brand_text = "orphic.fm"
-    draw.text((MARGIN_X, y_bottom - 20), brand_text, font=font_brand,
-              fill=(255, 255, 255, 120))
+    # Brand line at top
+    draw.text((MARGIN_X, y), "orphic.fm", font=font_brand,
+              fill=(255, 255, 255, 100))
+    y += BRAND_SIZE + 24
+
+    # Subtitle (album name for songs)
+    if subtitle:
+        font_subtitle = ImageFont.truetype(FONT_BODY, 18)
+        draw.text((MARGIN_X, y), subtitle, font=font_subtitle,
+                  fill=(255, 255, 255, 120))
+        y += 18 + 10
+
+    # Title — may need to wrap for long titles
+    title_lines = wrap_text_ellipsis(draw, title, font_title,
+                                      TEXT_AREA_WIDTH, 2)
+    line_height_title = TITLE_SIZE + 6
+    for line in title_lines:
+        draw.text((MARGIN_X, y), line, font=font_title,
+                  fill=(255, 255, 255, 255))
+        y += line_height_title
+    y += 12
+
+    # Thin separator line
+    draw.line([(MARGIN_X, y), (MARGIN_X + 60, y)],
+              fill=(255, 255, 255, 80), width=2)
+    y += 16
 
     # Description text
-    max_desc_lines = 4
+    remaining_height = OG_HEIGHT - y - MARGIN_Y
+    line_height_body = BODY_SIZE + 7
+    max_desc_lines = min(8, remaining_height // line_height_body)
     desc_lines = wrap_text_ellipsis(draw, description, font_body,
                                      TEXT_AREA_WIDTH, max_desc_lines)
-    line_height_body = BODY_SIZE + 8
-    desc_block_height = len(desc_lines) * line_height_body
-
-    y_desc_start = y_bottom - 20 - 30 - desc_block_height
-    for i, line in enumerate(desc_lines):
-        y = y_desc_start + i * line_height_body
+    for line in desc_lines:
         draw.text((MARGIN_X, y), line, font=font_body,
-                  fill=(255, 255, 255, 200))
+                  fill=(255, 255, 255, 180))
+        y += line_height_body
 
-    # Subtitle (album name) above title for songs
-    y_title_bottom = y_desc_start - 16
-
-    if subtitle:
-        font_subtitle = ImageFont.truetype(FONT_BODY, 20)
-        title_bbox = draw.textbbox((0, 0), title, font=font_title)
-        title_h = title_bbox[3] - title_bbox[1]
-
-        subtitle_bbox = draw.textbbox((0, 0), subtitle, font=font_subtitle)
-        subtitle_h = subtitle_bbox[3] - subtitle_bbox[1]
-
-        y_subtitle = y_title_bottom - title_h - 8 - subtitle_h
-        draw.text((MARGIN_X, y_subtitle), subtitle, font=font_subtitle,
-                  fill=(255, 255, 255, 120))
-        y_title = y_subtitle + subtitle_h + 8
-    else:
-        title_bbox = draw.textbbox((0, 0), title, font=font_title)
-        title_h = title_bbox[3] - title_bbox[1]
-        y_title = y_title_bottom - title_h
-
-    # Title
-    draw.text((MARGIN_X, y_title), title, font=font_title,
-              fill=(255, 255, 255, 255))
-
-    # Save as PNG (better for OG images than webp — universal support)
+    # Save
     output_path.parent.mkdir(parents=True, exist_ok=True)
     img = img.convert("RGB")
     img.save(str(output_path), "PNG", quality=90)
