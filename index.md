@@ -38,6 +38,10 @@ title: Home
     {% if latest_album.poster_url %}
       <img src="{{ latest_album.poster_url | relative_url }}" alt="" loading="lazy"
         class="{% if featured_has_unique_art %}unique-bg{% endif %}">
+      {% if featured_has_unique_art %}
+        <img src="{{ latest_album.poster_url | relative_url }}" alt="" loading="lazy"
+          class="unique-bg-sharp">
+      {% endif %}
     {% endif %}
   </div>
   <div class="featured-hero-scrim"></div>
@@ -270,9 +274,10 @@ title: Home
     transform: scale(1.1);
   }
   .featured-hero-bg img.unique-bg {
-    filter: brightness(0.5) saturate(1.15);
-    transform: none;
-    object-position: center;
+    display: none;
+  }
+  .featured-hero-bg img.unique-bg-sharp {
+    display: none;
   }
   .featured-hero-scrim {
     position: absolute;

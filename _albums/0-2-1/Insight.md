@@ -6,7 +6,6 @@ date: 2026-03-21
 album: "0-2-1"
 track: 2
 length: "4:48"
-featuredSong: true
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/0-2-1-assets/Insight.mp4"
 poster_url: "/assets/albums/2026-03-20-0-2-1/poster.webp"
 og_image: "/assets/albums/2026-03-20-0-2-1/og-insight.png"

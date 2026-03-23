@@ -22,9 +22,18 @@ layout: default
   {% endif %}
 {% endif %}
 
+{% assign album_page = site.pages | where: "album", page.album | first %}
+{% assign has_unique_art = false %}
+{% if page.poster_url and album_page and page.poster_url != album_page.poster_url %}
+  {% assign has_unique_art = true %}
+{% endif %}
+
 <div class="album-background-container">
   {% if page.poster_url %}
-    <img src="{{ page.poster_url | relative_url }}" class="album-background-image" alt="">
+    <img src="{{ page.poster_url | relative_url }}" class="album-background-image {% if has_unique_art %}unique-bg{% endif %}" alt="">
+    {% if has_unique_art %}
+      <img src="{{ page.poster_url | relative_url }}" class="album-background-image unique-bg-sharp" alt="">
+    {% endif %}
   {% endif %}
   <div class="album-background-overlay"></div>
 </div>
@@ -288,6 +297,12 @@ layout: default
     filter: blur(15px) saturate(1.8) brightness(0.6) opacity(0.4);
     transform: scale(1.05);
     animation: slowZoom 40s ease-in-out infinite alternate;
+  }
+  .album-background-image.unique-bg {
+    display: none;
+  }
+  .album-background-image.unique-bg-sharp {
+    display: none;
   }
   @keyframes slowZoom {
     from { transform: scale(1.05) translate(0,0); }

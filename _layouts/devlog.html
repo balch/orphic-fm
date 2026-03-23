@@ -52,6 +52,9 @@ layout: default
         {% if track.poster_url %}
           <div class="devlog-song-bg">
             <img src="{{ track.poster_url | relative_url }}" alt="" loading="lazy">
+            {% if has_unique_art %}
+              <img src="{{ track.poster_url | relative_url }}" alt="" loading="lazy" class="unique-art-sharp">
+            {% endif %}
           </div>
           <div class="devlog-song-bg-scrim"></div>
         {% endif %}
@@ -274,10 +277,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   /* Unique song art: clear, prominent, properly scaled */
   .devlog-song.unique-art .devlog-song-bg img {
-    filter: brightness(0.55) saturate(1.15);
-    transform: none;
-    object-fit: cover;
-    object-position: center;
+    display: none;
+  }
+  .devlog-song.unique-art .devlog-song-bg img.unique-art-sharp {
+    display: none;
   }
   /* Scrim: default for shared art — even, subtle */
   .devlog-song-bg-scrim {
