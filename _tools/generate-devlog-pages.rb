@@ -28,6 +28,42 @@ end
 Dir.glob(File.join(DEVLOG_DIR, "*/index.md")).each { |f| File.delete(f) }
 
 count = 0
+
+# --- Album-level pages (e.g. /devlog/0-2-1/) ---
+Dir.glob(File.join(ROOT, "albums", "*.md")).each do |album_file|
+  content = File.read(album_file)
+  next unless content =~ /\A---\s*\n(.*?\n)---\s*\n/m
+
+  fm       = YAML.safe_load($1, permitted_classes: [Date])
+  next unless fm
+
+  title    = fm["album"] || fm["title"]
+  slug     = slugify(title)
+  og_image = fm["og_image"]
+  poster   = fm["poster_url"]
+  desc     = fm["tech_description"] || fm["description"]
+  image    = og_image || poster
+
+  dir = File.join(DEVLOG_DIR, slug)
+  FileUtils.mkdir_p(dir)
+
+  File.write(File.join(dir, "index.md"), <<~FRONTMATTER)
+    ---
+    layout: devlog-song
+    title: #{yaml_quote(title)}
+    description: #{yaml_quote(desc)}
+    og_image: #{yaml_quote(image || "")}
+    poster_url: #{yaml_quote(poster || "")}
+    track_slug: #{yaml_quote(slug)}
+    permalink: /devlog/#{slug}/
+    ---
+  FRONTMATTER
+
+  count += 1
+  puts "  Generated: /devlog/#{slug}/ (album)"
+end
+
+# --- Track-level pages (e.g. /devlog/itchy-scratchy/) ---
 Dir.glob(File.join(ROOT, "_albums", "**", "*.md")).each do |track_file|
   content = File.read(track_file)
   next unless content =~ /\A---\s*\n(.*?\n)---\s*\n/m
@@ -63,4 +99,4 @@ Dir.glob(File.join(ROOT, "_albums", "**", "*.md")).each do |track_file|
   puts "  Generated: /devlog/#{slug}/"
 end
 
-puts "Done. #{count} devlog song pages generated."
+puts "Done. #{count} devlog pages generated."
