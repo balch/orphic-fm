@@ -139,10 +139,11 @@ def darken_image(img):
 
 def wrap_text_ellipsis(draw, text, font, max_width, max_lines):
     """Word-wrap text to fit within max_width, truncating with ellipsis."""
-    # Clean up text: remove markdown bold/italic markers
+    # Clean up text: remove markdown bold/italic markers and HTML tags
     text = re.sub(r'\*\*(.+?)\*\*', r'\1', text)
     text = re.sub(r'\*(.+?)\*', r'\1', text)
     text = re.sub(r'`(.+?)`', r'\1', text)
+    text = re.sub(r'<[^>]+>', '', text)
     text = text.replace("\n", " ").strip()
 
     words = text.split()

@@ -12,5 +12,5 @@ tech_description: |
 
   New **Drop** effects in the DJ Panel provide Coachella-inspired sounds and graphics. Arrangements are constructed in Kotlin with a data hierarchy allowing sounds to be assigned to tracks, which are assembled into band mates who perform based on the characteristics of the song, individual, and user input to produce flowing and evolving musiç.<br><br>
 
-  In this app, everything is left to chance, and Markov chains are used to define probabilities that generate sounds and compositions. A lot can go wrong with this setup, but the goal is to provide space and room for creativity, while defining guidelines and constraints to manage the overall flow and create something that is compelling.\\
+  In this app, everything is left to chance, and Markov chains are used to define probabilities that generate sounds and compositions. A lot can go wrong with this setup, but the goal is to provide space and room for creativity, while defining guidelines and constraints to manage the overall flow and create something that is compelling.
 ---
