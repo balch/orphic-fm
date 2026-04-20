@@ -37,6 +37,17 @@ BRAND_SIZE = 16
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def is_og_fresh(output_path, *source_paths):
+    """Skip regeneration if OG PNG is newer than all source files."""
+    if not output_path.exists():
+        return False
+    out_mtime = output_path.stat().st_mtime
+    for p in source_paths:
+        if p.exists() and p.stat().st_mtime > out_mtime:
+            return False
+    return True
+
+
 def parse_frontmatter(filepath):
     """Extract YAML frontmatter as a dict (simple parser, no PyYAML needed)."""
     text = filepath.read_text(encoding="utf-8")
@@ -255,6 +266,10 @@ def process_albums():
         output_dir = poster_path.parent
         output_path = output_dir / "og-landscape.png"
 
+        if is_og_fresh(output_path, poster_path, page_path):
+            print(f"Album: {album_name}  (fresh, skipped)")
+            continue
+
         print(f"Album: {album_name}")
         generate_og_image(poster_path, album_name, description, output_path,
                          crop_gravity=crop_gravity)
@@ -287,6 +302,10 @@ def process_songs():
         output_dir = poster_path.parent
         output_path = output_dir / f"og-{slug}.png"
 
+        if is_og_fresh(output_path, poster_path, song_path):
+            print(f"Song: {title} ({album})  (fresh, skipped)")
+            continue
+
         crop_gravity = fm.get("og_crop_gravity", "center")
         print(f"Song: {title} ({album})")
         generate_og_image(poster_path, title, description, output_path,
@@ -313,6 +332,8 @@ def update_frontmatter(filepath, key, value):
         parts = text.split("---", 2)
         if len(parts) >= 3:
             new_text = parts[0] + "---" + parts[1] + f'{key}: "{value}"\n' + "---" + "---".join(parts[2:])
+    if new_text == text:
+        return
     filepath.write_text(new_text, encoding="utf-8")
 
 

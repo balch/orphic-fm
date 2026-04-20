@@ -106,6 +106,7 @@ layout: default
             {% if page.poster_url %}poster="{{ page.poster_url | relative_url }}"{% endif %}
             class="video-lightbox-trigger"
             playsinline
+            preload="metadata"
             controls></video>
         </div>
       </div>
@@ -407,6 +408,8 @@ layout: default
     box-shadow: 0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
+    max-height: 70vh;
+    margin: 0 auto;
     /* aspect-ratio set via inline style from front-matter */
   }
   .video-container {

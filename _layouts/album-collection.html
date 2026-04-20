@@ -71,7 +71,7 @@ layout: default
     {% if album_tracks.size > 0 %}
       <div class="album-player-area">
         <div class="album-player-container" id="albumPlayer" style="display: none;">
-          <video id="albumVideo" controls playsinline></video>
+          <video id="albumVideo" controls playsinline preload="metadata"></video>
           <div class="album-player-info" id="albumPlayerInfo"></div>
         </div>
         <button class="album-play-btn" id="albumPlayBtn" aria-label="Play album">
@@ -418,8 +418,10 @@ layout: default
   .album-player-container video {
     width: 100%;
     aspect-ratio: 16/9;
+    max-height: 70vh;
     object-fit: contain;
     display: block;
+    margin: 0 auto;
   }
   .album-player-info {
     padding: 0.75rem 1.25rem;
