@@ -1,7 +1,7 @@
 ---
 layout: album
 title: "Ant Hill"
-description: "All in all, we are all just ants on the hill. Ants building a hill synced to a techno beat with drops in the background."
+description: "All in all, we are all just ants on the hill."
 date: 2026-04-19
 album: "RIF"
 track: 3
