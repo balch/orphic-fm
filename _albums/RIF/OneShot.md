@@ -4,6 +4,7 @@ title: "One Shot"
 description: "Coachella-inspired DJ Drop features implemented in a day by 4.7."
 date: 2026-04-19
 album: "RIF"
+featuredSong: true
 track: 2
 length: "2:26"
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/RIF-assets/OneShot.mp4"
