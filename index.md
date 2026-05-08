@@ -165,7 +165,7 @@ title: Home
       {% assign gallery_tracks = all_tracks | where_exp: "item", "item.url != featured_track.url" | limit: 20 %}
       {% for album in gallery_tracks %}
         <div class="grid-item">
-          <div class="grid-video-container" style="aspect-ratio: {{ album.aspect_ratio | default: '16/9' }};">
+          <div class="grid-video-container">
             <video
               src="{{ album.video_url }}"
               {% if album.poster_url %}poster="{{ album.poster_url | relative_url }}"{% endif %}
@@ -521,27 +521,37 @@ title: Home
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
-    align-items: start;
   }
 
   .grid-item {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .grid-item:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .grid-info {
+    padding: 0 0.25rem 0.25rem;
   }
 
   .grid-video-container {
-    /* aspect-ratio set via inline style from front-matter */
-    border-radius: 16px;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
     overflow: hidden;
     background: #000;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
     position: relative;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .grid-video-container:hover {
-    transform: scale(1.02);
   }
 
   .grid-video-container video {
@@ -576,7 +586,7 @@ title: Home
   }
 
 
-  .grid-video-container:hover .expand-overlay {
+  .grid-item:hover .expand-overlay {
     opacity: 1;
   }
 
@@ -628,6 +638,7 @@ title: Home
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.7em;
   }
 
   .mobile-only { display: none; }
@@ -651,6 +662,11 @@ title: Home
     }
     .album-grid {
       grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .grid-item {
+      padding: 0.75rem;
+      border-radius: 16px;
     }
     .gallery-section {
       padding: 4rem 0 8rem;

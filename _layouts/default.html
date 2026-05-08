@@ -586,6 +586,12 @@
       document.addEventListener('play', (e) => {
         if (e.target.tagName !== 'VIDEO') return;
         if (e.target.classList.contains('lightbox-video')) return;
+        // Only one video plays at a time: pause every other video on the page
+        document.querySelectorAll('video').forEach((v) => {
+          if (v !== e.target && !v.classList.contains('lightbox-video') && !v.paused) {
+            v.pause();
+          }
+        });
         activeVideo = e.target;
         if (shadowAudio.src !== activeVideo.src) {
           shadowAudio.src = activeVideo.src;
