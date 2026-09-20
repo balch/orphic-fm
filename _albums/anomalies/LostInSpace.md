@@ -5,7 +5,7 @@ description: "I've used the term Anomaly for a long time to describe issues I se
 date: 2026-07-18
 album: "Anomalies"
 track: 1
-length: "0:20"
+length: "2:55"
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/anomalies-assets/LostInSpace.mp4"
 poster_url: "/assets/albums/2026-07-18-Anomalies/poster.webp"
 aspect_ratio: "720/1552"

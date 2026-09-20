@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# encoding: UTF-8
 # Generates per-song devlog redirect pages so each track gets its own
 # shareable URL with correct OG meta tags.
 #
@@ -11,6 +12,14 @@
 require "yaml"
 require "date"
 require "fileutils"
+
+# Force UTF-8 for all file reads regardless of the invoking shell's locale.
+# Without this, a shell with no LANG/LC_ALL set makes Ruby default external
+# encoding to US-ASCII, and reading album/track markdown containing non-ASCII
+# characters (curly quotes, em-dashes, etc.) raises ArgumentError partway
+# through the loop below, after the destructive cleanup on line ~30 has
+# already run.
+Encoding.default_external = Encoding::UTF_8
 
 ROOT = File.expand_path("..", __dir__)
 DEVLOG_DIR = File.join(ROOT, "devlog")

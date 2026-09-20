@@ -5,7 +5,6 @@ description: "New vibe to showcase the weather effects. Thunderclaps, rolling th
 date: 2026-09-06
 album: "Anomalies"
 track: 2
-featuredSong: true
 length: "3:35"
 video_url: "https://orphic-fm-video.orphic-fm.workers.dev/anomalies-assets/RustBelt.mp4"
 poster_url: "/assets/albums/2026-07-18-Anomalies/RustBeltPoster.jpg"
