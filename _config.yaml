@@ -23,8 +23,6 @@ navigation:
         url: https://balch.github.io/2025/12/29/coachella-dreams.html
       - title: Meet Orpheus from Orphic-FM!
         url: https://balch.github.io/2026/01/03/hello-orpheus-fm.html
-  - title: Synth Source
-    url: https://github.com/balch/orphic-fm-app
 exclude:
   - docs/
   - vendor/

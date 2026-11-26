@@ -13,5 +13,4 @@ tags: ["human", "leslie", "cowbell"]
 tech_blurb: "A dual-rotor Leslie simulation — Linkwitz-Riley crossover splits the signal into horn and drum channels, each with independent rotor inertia and stereo amplitude modulation."
 tech_content: |
   Lazy Susan showcases the new Horn (Leslie rotary speaker) DSP effect. The C++ engine splits the input through a **Linkwitz-Riley crossover** into separate horn and drum rotor channels, each spinning with **independent inertia** to model the real-world lag of heavy rotating elements. **Stereo amplitude modulation** recreates the Doppler-like swirl that defines the Leslie sound. On the Kotlin side, a **physics-based animation** drives the rotor visuals in the HornPanel, with tactile controls for Speed, Ratio, Depth, Amount, Mix, and Brake. Rotor phase and audio peaks feed back into the engine's **visualization ring buffers**, so you can watch the rotors spin in sync with what you hear.
-tech_url: "https://github.com/balch/orphic-fm-app/commit/77a0b6d3"
 ---

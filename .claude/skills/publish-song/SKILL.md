@@ -30,7 +30,7 @@ Collect from user (or infer from filename/video):
 | `video_url` | yes | Cloudflare Workers URL (see step 3) |
 | `tech_blurb` | no | One-line technical summary (triggers devlog page) |
 | `tech_content` | no | Multi-line technical deep-dive |
-| `tech_url` | no | Link to related commit/code |
+| `tech_url` | no | Link to related commit/code — public repos only (orphic-fm-app is private, omit) |
 | `featuredSong` | no | Boolean — highlights in gallery |
 | `poster_url` | no | Falls back to album poster if omitted |
 | `og_crop_gravity` | no | "top", "center", or "bottom" for OG image cropping |
@@ -89,8 +89,7 @@ If no direct match, search broader terms (e.g., the DSP feature name). Get the c
 git show HASH --format="%H%n%s%n%n%b" --stat
 ```
 
-Read the relevant source file (e.g., a Vibe class) to understand the DSP/technical details for writing `tech_blurb` and `tech_content`. Use the commit hash for the `tech_url` field:
-`https://github.com/balch/orphic-fm-app/commit/{HASH}`
+Read the relevant source file (e.g., a Vibe class) to understand the DSP/technical details for writing `tech_blurb` and `tech_content`. The orphic-fm-app repo is private: do not add `tech_url` or link to its commits/files. Refer to commits by short hash in backticks and files by name, unlinked.
 
 ### 5. Create Track Markdown File
 
@@ -115,7 +114,6 @@ tags: ["tag1", "tag2"]
 tech_blurb: "One-line technical summary"
 tech_content: |
   Multi-line technical description...
-tech_url: "https://github.com/..."
 ---
 ```
 

@@ -14,5 +14,4 @@ tags: ["human", "dj", "turntable", "scratch"]
 tech_blurb: "A full-stack DJ turntable — C++ DSP with circular buffer capture and cubic Hermite interpolation playback, dual decks with per-source selection, and a constant-power crossfader."
 tech_content: |
   Itchy Scratchy puts the new DJ turntable front and center. The C++ DSP layer captures audio into a **circular buffer** and plays it back with **cubic Hermite interpolation**, giving scratches that warm, vinyl-like pitch response. Each deck can tap any source — Synth, Drums, Bass, or Master — and a **constant-power crossfader** blends between them without volume dips at center. On the Kotlin side, an MVI ViewModel drives a **60Hz physics simulation** for platter momentum, while the Compose UI renders **radial waveform platters** and a vertical crossfader in the Cleveland Guardians palette.
-tech_url: "https://github.com/balch/orphic-fm-app/commit/f2e044f4"
 ---
